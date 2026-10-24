@@ -1,0 +1,65 @@
+services:
+  mongodb:
+    image: mongo:8.0.34
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: crm
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  mongodb-shard-1:
+    image: mongo:8.0.34
+    ports:
+      - "127.0.0.1:27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: crm
+    volumes:
+      - mongodb-shard-1-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  mongodb-shard-2:
+    image: mongo:8.0.34
+    ports:
+      - "127.0.0.1:27019:27017"
+    environment:
+      MONGO_INITDB_DATABASE: crm
+    volumes:
+      - mongodb-shard-2-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:8.8.3-alpine3.23
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  mongodb-data:
+  mongodb-shard-1-data:
+  mongodb-shard-2-data:
+  redis-data:
