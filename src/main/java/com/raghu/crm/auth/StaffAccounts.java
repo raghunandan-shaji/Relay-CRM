@@ -22,4 +22,8 @@ public class StaffAccounts {
 	public boolean contains(String email) {
 		return emails.contains(email.strip().toLowerCase(Locale.ROOT));
 	}
+
+	public Set<String> emails() {
+		return emails;
+	}
 }

@@ -107,6 +107,11 @@ public class CustomerService {
 		return customer.id();
 	}
 
+	public CustomerResponse findByEmail(String email) {
+		String id = redis.opsForValue().get(emailKey(email));
+		return id == null ? null : get(id);
+	}
+
 	public CustomerResponse update(String id, UpdateCustomerRequest request) {
 		MongoTemplate template = shardRouter.templateFor(id);
 		Query query = Query.query(Criteria.where("_id").is(id).and("version").is(request.version()));

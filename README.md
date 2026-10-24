@@ -1,12 +1,12 @@
 # Relay CRM — System Design Laboratory
 
-An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
+An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts, a sales pipeline, and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
 
 ## Current implementation
 
 | Component | Implemented use |
 | --- | --- |
-| Snowflake ID generator | Customer IDs; each application replica needs a distinct worker ID |
+| Snowflake ID generator | Customer, lead, and opportunity IDs; each application replica needs a distinct worker ID |
 | Consistent hashing | Customer-ID routing with 256 virtual nodes per configured shard |
 | Application-level database sharding | Customer documents spread across 3 independent MongoDB instances |
 | Redis key-value store | Global normalized-email-to-customer-ID index |
@@ -15,6 +15,8 @@ An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoin
 | Optimistic concurrency | Version checks prevent stale profile updates |
 | Indexed search and autocomplete | Staff-only normalized name-prefix lookup across all shards |
 | Shared profile cache | Redis caches public profiles with TTL and version-aware writes |
+| Sales pipeline | Customer-shard lead storage, atomic opportunity qualification, and versioned deal stages |
+| Representative assignment | Consistent hashing over registered staff accounts; assignment is persisted |
 
 The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
 
@@ -81,6 +83,8 @@ Default request allowances per 60-second window: login 10/IP, registration 5/IP,
 
 For staff access, configure exact registered emails with `CRM_STAFF_EMAILS` and log in again. Default staff access is empty. Profile responses expose `X-Profile-Source: mongodb` or `redis`. See [customer-search-cache.md](docs/customer-search-cache.md) for permissions, search initialization, cache consistency limits, and verification.
 
+Staff-only leads/opportunities are available under `/api/customers/{customerId}/leads`. The opportunity is embedded in its lead so qualification is one atomic MongoDB write. See [sales-workflow.md](docs/sales-workflow.md) for the complete Postman sequence, stages, assignment, pagination, and test results.
+
 ## Verification
 
 ```sh
@@ -102,7 +106,7 @@ RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests tes
 docker compose start mongodb-shard-2
 ```
 
-Last full integration-enabled run at this checkpoint: **60 tests discovered, 59 passed, 1 deliberate outage test skipped, 0 failures/errors**.
+Last full integration-enabled run at this checkpoint: **70 tests discovered, 69 passed, 1 deliberate outage test skipped, 0 failures/errors**.
 
 Selected observed checks:
 
@@ -112,10 +116,11 @@ Selected observed checks:
 - Two independent HTTP server contexts on different ports shared all three rate-limit policies. Both ran in one JVM, so this is a functional distribution check, not a multi-process capacity benchmark.
 - Real registration/login/profile requests, cross-customer access rejection, stale-update rejection, JWT validation, and shard health checks passed.
 - Selective name-prefix query over 600 fixtures: 12 documents examined through the index versus 602 through the collection-scan baseline. Cache and staff-access checks passed; detailed results are in [customer-search-cache.md](docs/customer-search-cache.md).
+- 32 concurrent lead qualifications: 1 success, 31 conflicts, exactly 1 opportunity. Three-shard lead colocation, representative distribution, and exact decimal storage checks passed; see [sales-workflow.md](docs/sales-workflow.md).
 
 ## Remaining work and limits
 
-- Leads, opportunities, representative assignment, interactions, support tickets, and notifications
+- Interaction/communication history, sales activities, support tickets, and notifications
 - Load-balancing application replicas and measuring performance at three workload levels
 - Controlled baseline comparisons, resource usage, failure/recovery measurements, and the final report
 - Replication/failover and safe data migration when changing shard membership
