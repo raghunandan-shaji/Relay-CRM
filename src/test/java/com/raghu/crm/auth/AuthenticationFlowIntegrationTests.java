@@ -2,6 +2,7 @@ package com.raghu.crm.auth;
 
 import com.jayway.jsonpath.JsonPath;
 import com.raghu.crm.customer.Customer;
+import com.raghu.crm.customer.CustomerProfileCache;
 import com.raghu.crm.systemdesign.sharding.ShardRouter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -43,6 +44,7 @@ class AuthenticationFlowIntegrationTests {
 	@Autowired private ShardRouter router;
 	@Autowired private StringRedisTemplate redis;
 	@Autowired private PasswordEncoder passwords;
+	@Autowired private CustomerProfileCache cache;
 	private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
 
 	@Test
@@ -69,6 +71,9 @@ class AuthenticationFlowIntegrationTests {
 
 			HttpResponse<String> profile = request("GET", "/api/customers/" + id, null, token);
 			assertEquals(200, profile.statusCode(), profile.body());
+			assertEquals("mongodb", profile.headers().firstValue("X-Profile-Source").orElseThrow());
+			assertEquals("redis", request("GET", "/api/customers/" + id, null, token)
+				.headers().firstValue("X-Profile-Source").orElseThrow());
 			assertEquals(id, JsonPath.read(profile.body(), "$.id"));
 			assertFalse(profile.body().contains("password"));
 			String update = "{\"fullName\":\"Updated Customer\",\"company\":\"CRM Lab\",\"version\":0}";
@@ -89,6 +94,7 @@ class AuthenticationFlowIntegrationTests {
 			created.forEach((customerEmail, customerId) -> {
 				router.templateFor(customerId).remove(Query.query(Criteria.where("_id").is(customerId)), Customer.class);
 				redis.delete("crm:customer-email:" + customerEmail);
+				redis.delete(cache.key(customerId));
 			});
 		}
 	}

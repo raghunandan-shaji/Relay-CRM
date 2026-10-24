@@ -15,6 +15,7 @@ public record Customer(
 	String company,
 	Instant createdAt,
 	Instant updatedAt,
-	long version
+	long version,
+	String nameKey
 ) {
 }

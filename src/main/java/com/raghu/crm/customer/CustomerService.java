@@ -27,14 +27,16 @@ public class CustomerService {
 	private final StringRedisTemplate redis;
 	private final PasswordEncoder passwordEncoder;
 	private final String dummyPasswordHash;
+	private final CustomerProfileCache cache;
 
 	public CustomerService(SnowflakeIdGenerator idGenerator, ShardRouter shardRouter,
-			StringRedisTemplate redis, PasswordEncoder passwordEncoder) {
+			StringRedisTemplate redis, PasswordEncoder passwordEncoder, CustomerProfileCache cache) {
 		this.idGenerator = idGenerator;
 		this.shardRouter = shardRouter;
 		this.redis = redis;
 		this.passwordEncoder = passwordEncoder;
 		this.dummyPasswordHash = passwordEncoder.encode("dummy-login-timing-check");
+		this.cache = cache;
 	}
 
 	public CustomerResponse create(CreateCustomerRequest request) {
@@ -57,7 +59,8 @@ public class CustomerService {
 			nullIfBlank(request.company()),
 			now,
 			now,
-			0);
+			0,
+			CustomerNames.normalize(request.fullName()));
 
 		try {
 			shardRouter.templateFor(id).insert(customer);
@@ -73,12 +76,23 @@ public class CustomerService {
 	}
 
 	public CustomerResponse get(String id) {
+		return read(id).customer();
+	}
+
+	public ProfileRead read(String id) {
+		CustomerResponse cached = cache.get(id);
+		if (cached != null) return new ProfileRead(cached, "redis");
 		MongoTemplate template = shardRouter.templateFor(id);
 		Customer customer = template.findById(id, Customer.class);
 		if (customer == null) {
 			throw new CustomerNotFoundException(id);
 		}
-		return CustomerResponse.from(customer, shardRouter.shardIdFor(id));
+		CustomerResponse profile = CustomerResponse.from(customer, shardRouter.shardIdFor(id));
+		cache.put(profile);
+		return new ProfileRead(profile, "mongodb");
+	}
+
+	public record ProfileRead(CustomerResponse customer, String source) {
 	}
 
 	public String authenticate(String email, String password) {
@@ -98,6 +112,7 @@ public class CustomerService {
 		Query query = Query.query(Criteria.where("_id").is(id).and("version").is(request.version()));
 		Update update = new Update()
 			.set("fullName", request.fullName().trim())
+			.set("nameKey", CustomerNames.normalize(request.fullName()))
 			.set("phone", nullIfBlank(request.phone()))
 			.set("company", nullIfBlank(request.company()))
 			.set("updatedAt", now())
@@ -109,7 +124,9 @@ public class CustomerService {
 			FindAndModifyOptions.options().returnNew(true),
 			Customer.class);
 		if (customer != null) {
-			return CustomerResponse.from(customer, shardRouter.shardIdFor(id));
+			CustomerResponse profile = CustomerResponse.from(customer, shardRouter.shardIdFor(id));
+			cache.put(profile);
+			return profile;
 		}
 		if (!template.exists(Query.query(Criteria.where("_id").is(id)), Customer.class)) {
 			throw new CustomerNotFoundException(id);

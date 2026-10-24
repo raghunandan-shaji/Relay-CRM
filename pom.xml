@@ -114,6 +114,7 @@
 					<systemPropertyVariables>
 						<!-- Test key only; the running app requires a separate random secret. -->
 						<crm.auth.secret-base64>dGVzdC1vbmx5LXNlY3JldC1kb250LXVzZS1pbi1wcm9kdWN0aW9u</crm.auth.secret-base64>
+						<crm.search.initialize>false</crm.search.initialize>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>

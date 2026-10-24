@@ -22,10 +22,12 @@ public class AuthController {
 	private static final long TOKEN_LIFETIME_SECONDS = 900;
 	private final CustomerService customers;
 	private final JwtEncoder encoder;
+	private final StaffAccounts staff;
 
-	public AuthController(CustomerService customers, JwtEncoder encoder) {
+	public AuthController(CustomerService customers, JwtEncoder encoder, StaffAccounts staff) {
 		this.customers = customers;
 		this.encoder = encoder;
+		this.staff = staff;
 	}
 
 	@PostMapping("/api/auth/login")
@@ -37,6 +39,7 @@ public class AuthController {
 			.issuer(JwtConfig.ISSUER)
 			.audience(List.of(JwtConfig.AUDIENCE))
 			.subject(customerId)
+			.claim("scope", staff.contains(request.email()) ? "crm:staff" : "")
 			.issuedAt(now)
 			.notBefore(now)
 			.expiresAt(now.plusSeconds(TOKEN_LIFETIME_SECONDS))

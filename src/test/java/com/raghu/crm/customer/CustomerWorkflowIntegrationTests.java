@@ -41,6 +41,9 @@ class CustomerWorkflowIntegrationTests {
 	@Autowired
 	private StringRedisTemplate redis;
 
+	@Autowired
+	private CustomerProfileCache cache;
+
 	@Test
 	void createsReadsAndUpdatesCustomerWithUniquenessAndVersionChecks() {
 		String email = "workflow-" + UUID.randomUUID() + "@example.com";
@@ -67,6 +70,7 @@ class CustomerWorkflowIntegrationTests {
 			if (created != null) {
 				shardRouter.templateFor(created.id()).remove(
 					Query.query(Criteria.where("_id").is(created.id())), Customer.class);
+				redis.delete(cache.key(created.id()));
 			}
 			redis.delete(CustomerService.emailKey(email));
 		}
@@ -87,7 +91,7 @@ class CustomerWorkflowIntegrationTests {
 				Instant now = Instant.now();
 				Customer customer = new Customer(
 					id, "Distribution Test " + i, "distribution-" + id + "@example.com",
-					"not-used-in-this-routing-test", null, null, now, now, 0);
+					"not-used-in-this-routing-test", null, null, now, now, 0, "distribution test " + i);
 				shardRouter.templateFor(id).insert(customer);
 				customers.add(customer);
 				counts.compute(shardId, (ignored, count) -> count + 1);

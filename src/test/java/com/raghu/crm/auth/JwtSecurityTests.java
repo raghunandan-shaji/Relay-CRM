@@ -3,6 +3,8 @@ package com.raghu.crm.auth;
 import com.raghu.crm.config.JwtConfig;
 import com.raghu.crm.customer.CustomerResponse;
 import com.raghu.crm.customer.CustomerService;
+import com.raghu.crm.customer.CustomerSearchService;
+import com.raghu.crm.customer.CustomerSummary;
 import com.raghu.crm.systemdesign.ratelimit.RedisRateLimiter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "crm.auth.staff-emails=staff@example.com")
 @AutoConfigureMockMvc
 class JwtSecurityTests {
 
@@ -44,6 +46,7 @@ class JwtSecurityTests {
 	@Autowired private JwtEncoder encoder;
 	@MockitoBean private CustomerService customers;
 	@MockitoBean private RedisRateLimiter limiter;
+	@MockitoBean private CustomerSearchService search;
 
 	@BeforeEach
 	void allowRequestsForSecurityTests() {
@@ -96,12 +99,13 @@ class JwtSecurityTests {
 		Instant now = Instant.now();
 		CustomerResponse customer = new CustomerResponse("123", "shard-0", "Demo", "demo@example.com",
 			null, null, now, now, 0);
-		when(customers.get("123")).thenReturn(customer);
+		when(customers.read("123")).thenReturn(new CustomerService.ProfileRead(customer, "redis"));
 		when(customers.update(eq("123"), any())).thenReturn(customer);
 		String token = token("123", JwtConfig.ISSUER, JwtConfig.AUDIENCE, now.plusSeconds(900));
 		mvc.perform(get("/api/customers/123").header("Authorization", "Bearer " + token))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.id").value("123"))
+			.andExpect(header().string("X-Profile-Source", "redis"))
 			.andExpect(jsonPath("$.passwordHash").doesNotExist());
 		mvc.perform(put("/api/customers/123").header("Authorization", "Bearer " + token)
 				.contentType("application/json").content("{\"fullName\":\"Changed\",\"version\":0}"))
@@ -146,9 +150,48 @@ class JwtSecurityTests {
 	}
 
 	private String token(String subject, String issuer, String audience, Instant expiry) {
+		return token(subject, issuer, audience, expiry, "");
+	}
+
+	private String token(String subject, String issuer, String audience, Instant expiry, String scope) {
 		JwtClaimsSet claims = JwtClaimsSet.builder().issuer(issuer).audience(List.of(audience))
-			.subject(subject).issuedAt(Instant.now().minusSeconds(300)).expiresAt(expiry).build();
+			.subject(subject).claim("scope", scope).issuedAt(Instant.now().minusSeconds(300)).expiresAt(expiry).build();
 		return encoder.encode(JwtEncoderParameters.from(
 			JwsHeader.with(MacAlgorithm.HS256).type("JWT").build(), claims)).getTokenValue();
+	}
+
+	@Test
+	void customerCannotSearchOrRequestStaffPrivilege() throws Exception {
+		String token = token("123", JwtConfig.ISSUER, JwtConfig.AUDIENCE, Instant.now().plusSeconds(900));
+		for (String endpoint : List.of("search", "suggestions")) {
+			mvc.perform(get("/api/customers/" + endpoint).param("prefix", "ra")
+				.header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
+		}
+		verifyNoInteractions(search);
+	}
+
+	@Test
+	void staffCanSearchAndReadAnotherProfileButCannotUpdateIt() throws Exception {
+		String token = token("456", JwtConfig.ISSUER, JwtConfig.AUDIENCE, Instant.now().plusSeconds(900), "crm:staff");
+		when(search.search("ra", 20)).thenReturn(List.of(new CustomerSummary("123", "Raghu", "demo@example.com", null, "shard-0")));
+		mvc.perform(get("/api/customers/search").param("prefix", "ra").header("Authorization", "Bearer " + token))
+			.andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value("123"));
+		Instant now = Instant.now();
+		when(customers.read("123")).thenReturn(new CustomerService.ProfileRead(
+			new CustomerResponse("123", "shard-0", "Raghu", "demo@example.com", null, null, now, now, 0), "mongodb"));
+		mvc.perform(get("/api/customers/123").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+		mvc.perform(put("/api/customers/123").header("Authorization", "Bearer " + token)
+			.contentType("application/json").content("{\"fullName\":\"Wrong\",\"version\":0}"))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void staffSearchValidatesPrefixAndResultLimit() throws Exception {
+		String token = token("456", JwtConfig.ISSUER, JwtConfig.AUDIENCE, Instant.now().plusSeconds(900), "crm:staff");
+		mvc.perform(get("/api/customers/search").param("prefix", "r").header("Authorization", "Bearer " + token))
+			.andExpect(status().isBadRequest());
+		mvc.perform(get("/api/customers/search").param("prefix", "ra").param("limit", "500")
+			.header("Authorization", "Bearer " + token)).andExpect(status().isBadRequest());
+		verifyNoInteractions(search);
 	}
 }

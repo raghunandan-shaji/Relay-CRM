@@ -13,6 +13,8 @@ An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoin
 | JWT authentication | Login and customer-owned profile access without HTTP sessions |
 | Atomic Redis rate limiter | Shared login, registration, and authenticated API quotas |
 | Optimistic concurrency | Version checks prevent stale profile updates |
+| Indexed search and autocomplete | Staff-only normalized name-prefix lookup across all shards |
+| Shared profile cache | Redis caches public profiles with TTL and version-aware writes |
 
 The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
 
@@ -56,8 +58,10 @@ docker compose stop
 | --- | --- |
 | `POST /api/customers` | Register; returns ID, shard ID, profile, and version |
 | `POST /api/auth/login` | Check email/password; return a 15-minute bearer JWT |
-| `GET /api/customers/{id}` | Read the logged-in customer's own profile |
+| `GET /api/customers/{id}` | Read own profile, or another customer's profile with staff scope |
 | `PUT /api/customers/{id}` | Update that profile using the latest version |
+| `GET /api/customers/search?prefix=ra` | Staff-only customer-name prefix search |
+| `GET /api/customers/suggestions?prefix=ra` | Staff-only autocomplete suggestions |
 | `GET /actuator/health/liveness` | Liveness probe |
 
 Registration body:
@@ -74,6 +78,8 @@ Registration body:
 Login with that email/password, then send the returned `accessToken` as a bearer token. The profile URL must contain the `customerId` from the same login response. MongoDB stores that ID as the document's string `_id`.
 
 Default request allowances per 60-second window: login 10/IP, registration 5/IP, authenticated APIs 120/customer. Exhaustion returns 429 and `Retry-After`. See [rate-limiting.md](docs/rate-limiting.md) for configuration, algorithm, metrics, and a Postman demonstration.
+
+For staff access, configure exact registered emails with `CRM_STAFF_EMAILS` and log in again. Default staff access is empty. Profile responses expose `X-Profile-Source: mongodb` or `redis`. See [customer-search-cache.md](docs/customer-search-cache.md) for permissions, search initialization, cache consistency limits, and verification.
 
 ## Verification
 
@@ -96,7 +102,7 @@ RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests tes
 docker compose start mongodb-shard-2
 ```
 
-Last full integration-enabled run at this checkpoint: **42 tests discovered, 41 passed, 1 deliberate outage test skipped, 0 failures/errors**. The authentication HTTP test also passed after its quota namespace was isolated for repeat runs.
+Last full integration-enabled run at this checkpoint: **60 tests discovered, 59 passed, 1 deliberate outage test skipped, 0 failures/errors**.
 
 Selected observed checks:
 
@@ -105,15 +111,15 @@ Selected observed checks:
 - Shared limiter: 100 calls across 20 threads and 2 limiter objects, allowance 25, exactly 25 admitted and 75 rejected.
 - Two independent HTTP server contexts on different ports shared all three rate-limit policies. Both ran in one JVM, so this is a functional distribution check, not a multi-process capacity benchmark.
 - Real registration/login/profile requests, cross-customer access rejection, stale-update rejection, JWT validation, and shard health checks passed.
+- Selective name-prefix query over 600 fixtures: 12 documents examined through the index versus 602 through the collection-scan baseline. Cache and staff-access checks passed; detailed results are in [customer-search-cache.md](docs/customer-search-cache.md).
 
 ## Remaining work and limits
 
-- Customer search, autocomplete, and profile caching
 - Leads, opportunities, representative assignment, interactions, support tickets, and notifications
 - Load-balancing application replicas and measuring performance at three workload levels
 - Controlled baseline comparisons, resource usage, failure/recovery measurements, and the final report
 - Replication/failover and safe data migration when changing shard membership
 
-Redis and each MongoDB shard are currently single points of failure. Registration spans Redis and MongoDB without a distributed transaction, so crashes or ambiguous writes can leave the email index inconsistent. The limiter returns 503 when Redis quota checking fails. JWT refresh/revocation, staff permissions, HTTPS termination, and production operational hardening are not implemented yet.
+Redis and each MongoDB shard are currently single points of failure. Registration spans Redis and MongoDB without a distributed transaction, so crashes or ambiguous writes can leave the email index inconsistent. Profile caching is eventually consistent. The limiter returns 503 when Redis quota checking fails. JWT refresh/revocation, full staff role management, HTTPS termination, and production operational hardening are not implemented yet.
 
 This checkpoint demonstrates implemented components and tested behavior; it does not establish production readiness or million-user capacity.

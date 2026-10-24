@@ -29,6 +29,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorize -> authorize
 			.requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
 			.requestMatchers(HttpMethod.POST, "/api/customers", "/api/auth/login").permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/customers/search", "/api/customers/suggestions").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers(HttpMethod.GET, "/api/customers/{id}").authenticated()
 			.requestMatchers(HttpMethod.PUT, "/api/customers/{id}").authenticated()
 			.anyRequest().denyAll())

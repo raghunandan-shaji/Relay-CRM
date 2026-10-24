@@ -46,6 +46,11 @@ public class ApiExceptionHandler {
 		return problem(HttpStatus.SERVICE_UNAVAILABLE, "A required data store is unavailable");
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	ProblemDetail invalidArgument(IllegalArgumentException exception) {
+		return problem(HttpStatus.BAD_REQUEST, exception.getMessage());
+	}
+
 	private static ProblemDetail problem(HttpStatus status, String detail) {
 		ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
 		problem.setTitle(status.getReasonPhrase());

@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public final class MongoShardRegistry implements AutoCloseable {
 
@@ -57,6 +59,10 @@ public final class MongoShardRegistry implements AutoCloseable {
 			}
 		}
 		return statuses;
+	}
+
+	public Set<String> shardIds() {
+		return new TreeSet<>(templates.keySet());
 	}
 
 	@Override

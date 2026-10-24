@@ -7,6 +7,7 @@ import com.raghu.crm.customer.CreateCustomerRequest;
 import com.raghu.crm.customer.Customer;
 import com.raghu.crm.customer.CustomerResponse;
 import com.raghu.crm.customer.CustomerService;
+import com.raghu.crm.customer.CustomerProfileCache;
 import com.raghu.crm.systemdesign.sharding.ShardRouter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -82,6 +83,7 @@ class RateLimitServersIntegrationTests {
 					router.templateFor(customer.id()).remove(Query.query(Criteria.where("_id").is(customer.id())), Customer.class);
 					keys.add("crm:customer-email:" + customer.email());
 					keys.add(prefix + "api:" + customer.id());
+					keys.add(first.getBean(CustomerProfileCache.class).key(customer.id()));
 				}
 				redis.delete(keys);
 			}

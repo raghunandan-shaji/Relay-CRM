@@ -40,6 +40,8 @@ The server listens at `http://127.0.0.1:8080` by default.
 
 6. Register a second customer. Use the first customer's token to GET or PUT the second customer's ID: expected 403. Tampering with a token returns 401.
 
+Staff-only customer search is now implemented. The server's `CRM_STAFF_EMAILS` allowlist designates staff accounts; the default is empty. The local demo allowlist is stored outside Git in `.local/staff.properties`. A fresh login issues a `crm:staff` scope only for configured emails. Staff may search and read profiles, but cannot update another customer's profile. See [customer-search-cache.md](customer-search-cache.md).
+
 The existing `raghu.demo@crm.local` account uses demo password `demo-password-123` and ID `107546705825628160` if it has not been deleted from the local databases.
 
 ## Tests
@@ -52,7 +54,7 @@ The HTTP integration test deletes only the temporary customer records and email-
 ## Scaling requirements and current limits
 
 - Every application replica must use the same secret, issuer, audience, and shard map, and a distinct `ID_WORKER_ID`. Bearer validation uses no HTTP session or Redis lookup. Login still depends on Redis and the selected MongoDB shard.
-- Access tokens expire after 15 minutes. Spring's default timestamp validator allows 60 seconds of clock skew. There is no refresh token, logout revocation, password reset, or staff role in this stage; customers can only access their own profile.
+- Access tokens expire after 15 minutes. Spring's default timestamp validator allows 60 seconds of clock skew. There is no refresh token, logout revocation, or password reset. Ordinary customers can only access their own profile; server-designated staff can also search and read other profiles. Removing an email from the allowlist affects new logins; existing staff tokens remain valid until expiry.
 - Rotating the sole signing key invalidates existing tokens. Planned overlapping key rotation would require a key ring.
 - The email index is currently authoritative in one Redis instance. A missing index breaks email login; there is no index-rebuild/reconciliation job yet. Redis and each MongoDB shard remain single points of failure.
 - The registration operation spans Redis and MongoDB without a distributed transaction. A process crash or ambiguous database write can leave the email index inconsistent. This stage does not establish crash-safe account creation.

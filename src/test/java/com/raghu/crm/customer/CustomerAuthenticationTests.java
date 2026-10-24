@@ -31,7 +31,7 @@ class CustomerAuthenticationTests {
 	@BeforeEach
 	void setUp() {
 		when(redis.opsForValue()).thenReturn(emails);
-		customers = new CustomerService(mock(SnowflakeIdGenerator.class), router, redis, passwords);
+		customers = new CustomerService(mock(SnowflakeIdGenerator.class), router, redis, passwords, mock(CustomerProfileCache.class));
 	}
 
 	@Test
@@ -63,6 +63,6 @@ class CustomerAuthenticationTests {
 		when(router.templateFor("123")).thenReturn(mongo);
 		when(mongo.findById("123", Customer.class)).thenReturn(new Customer(
 			"123", "Demo", "demo@example.com", passwords.encode("password-123"),
-			null, null, Instant.now(), Instant.now(), 0));
+			null, null, Instant.now(), Instant.now(), 0, "demo"));
 	}
 }
