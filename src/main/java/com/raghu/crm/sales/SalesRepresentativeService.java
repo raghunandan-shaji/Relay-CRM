@@ -35,7 +35,7 @@ public class SalesRepresentativeService {
 		return List.copyOf(representatives);
 	}
 
-	public String assign(String leadId, String requestedId) {
+	public String assign(String routingKey, String requestedId) {
 		List<Representative> available = available();
 		if (requestedId != null) {
 			if (available.stream().noneMatch(rep -> rep.id().equals(requestedId))) {
@@ -52,7 +52,7 @@ public class SalesRepresentativeService {
 			current = new AssignmentRing(ids, new ConsistentHashRing(ids, 256));
 			cachedRing = current;
 		}
-		return current.ring().nodeFor(leadId);
+		return current.ring().nodeFor(routingKey);
 	}
 
 	public record Representative(String id, String fullName, String email) {

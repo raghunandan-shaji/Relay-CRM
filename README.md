@@ -1,14 +1,14 @@
 # Relay CRM — System Design Laboratory
 
-An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts, a sales pipeline, and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
+An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts, a sales pipeline, interaction history, sales activities, and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
 
 ## Current implementation
 
 | Component | Implemented use |
 | --- | --- |
-| Snowflake ID generator | Customer, lead, and opportunity IDs; each application replica needs a distinct worker ID |
+| Snowflake ID generator | Customer, lead, opportunity, interaction, and activity IDs; each application replica needs a distinct worker ID |
 | Consistent hashing | Customer-ID routing with 256 virtual nodes per configured shard |
-| Application-level database sharding | Customer documents spread across 3 independent MongoDB instances |
+| Application-level database sharding | Customers spread across 3 independent MongoDB instances; their leads, interactions, and activities are colocated |
 | Redis key-value store | Global normalized-email-to-customer-ID index |
 | JWT authentication | Login and customer-owned profile access without HTTP sessions |
 | Atomic Redis rate limiter | Shared login, registration, and authenticated API quotas |
@@ -17,6 +17,8 @@ An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoin
 | Shared profile cache | Redis caches public profiles with TTL and version-aware writes |
 | Sales pipeline | Customer-shard lead storage, atomic opportunity qualification, and versioned deal stages |
 | Representative assignment | Consistent hashing over registered staff accounts; assignment is persisted |
+| Interaction history | Separate append-only records, indexed event-time cursor pagination, staff writes and owner/staff reads |
+| Sales activities | Planned work, representative assignment, filtered pagination, versioned completion/cancellation |
 
 The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
 
@@ -85,6 +87,8 @@ For staff access, configure exact registered emails with `CRM_STAFF_EMAILS` and 
 
 Staff-only leads/opportunities are available under `/api/customers/{customerId}/leads`. The opportunity is embedded in its lead so qualification is one atomic MongoDB write. See [sales-workflow.md](docs/sales-workflow.md) for the complete Postman sequence, stages, assignment, pagination, and test results.
 
+Interaction history and sales activities are under `/api/customers/{customerId}/interactions` and `/activities`. Staff create/manage them; customers can read their own records. All record contents are customer-visible. See [interactions-activities.md](docs/interactions-activities.md) for the Postman sequence, access rules, pagination, and limits.
+
 ## Verification
 
 ```sh
@@ -106,7 +110,7 @@ RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests tes
 docker compose start mongodb-shard-2
 ```
 
-Last full integration-enabled run at this checkpoint: **70 tests discovered, 69 passed, 1 deliberate outage test skipped, 0 failures/errors**.
+Last full integration-enabled run at this checkpoint: **77 tests discovered, 76 passed, 1 deliberate outage test skipped, 0 failures/errors**.
 
 Selected observed checks:
 
@@ -117,10 +121,11 @@ Selected observed checks:
 - Real registration/login/profile requests, cross-customer access rejection, stale-update rejection, JWT validation, and shard health checks passed.
 - Selective name-prefix query over 600 fixtures: 12 documents examined through the index versus 602 through the collection-scan baseline. Cache and staff-access checks passed; detailed results are in [customer-search-cache.md](docs/customer-search-cache.md).
 - 32 concurrent lead qualifications: 1 success, 31 conflicts, exactly 1 opportunity. Three-shard lead colocation, representative distribution, and exact decimal storage checks passed; see [sales-workflow.md](docs/sales-workflow.md).
+- 32 concurrent interaction inserts: all 32 persisted with distinct IDs. Of 32 concurrent task closures, exactly 1 succeeded and 31 conflicted. Owner/staff authorization, tied-timestamp history pagination, and three-shard engagement colocation passed; see [interactions-activities.md](docs/interactions-activities.md).
 
 ## Remaining work and limits
 
-- Interaction/communication history, sales activities, support tickets, and notifications
+- Support tickets and notifications
 - Load-balancing application replicas and measuring performance at three workload levels
 - Controlled baseline comparisons, resource usage, failure/recovery measurements, and the final report
 - Replication/failover and safe data migration when changing shard membership

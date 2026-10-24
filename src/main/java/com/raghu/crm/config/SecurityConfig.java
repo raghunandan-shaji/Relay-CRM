@@ -29,6 +29,10 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorize -> authorize
 			.requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
 			.requestMatchers(HttpMethod.POST, "/api/customers", "/api/auth/login").permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/customers/*/interactions", "/api/customers/*/interactions/**",
+				"/api/customers/*/activities", "/api/customers/*/activities/**").authenticated()
+			.requestMatchers("/api/customers/*/interactions", "/api/customers/*/interactions/**",
+				"/api/customers/*/activities", "/api/customers/*/activities/**").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers("/api/sales-representatives", "/api/customers/*/leads", "/api/customers/*/leads/**").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers(HttpMethod.GET, "/api/customers/search", "/api/customers/suggestions").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers(HttpMethod.GET, "/api/customers/{id}").authenticated()
