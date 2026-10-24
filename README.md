@@ -1,4 +1,4 @@
-# Scalable CRM — System Design Laboratory
+# Relay CRM — System Design Laboratory
 
 An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
 
