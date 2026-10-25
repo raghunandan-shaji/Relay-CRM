@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Relay CRM mixed workload" enabled="true">
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Concurrent users" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">-1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(threads,5)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">2</stringProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,27)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Synthetic customers" enabled="true">
+          <stringProp name="filename">${__P(users)}</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">customerId,token,staffToken</stringProp>
+          <stringProp name="delimiter">,</stringProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+        </CSVDataSet>
+        <hashTree />
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="profile" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments" />
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/${customerId}</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${token}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="search" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments" />
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/search?prefix=Benchmark%20Customer%200000&amp;limit=20</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${staffToken}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="autocomplete" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments" />
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/suggestions?prefix=Benchmark%20Customer%200000&amp;limit=10</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${staffToken}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="history" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments" />
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/${customerId}/interactions?limit=20</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${token}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="tickets" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments" />
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/${customerId}/tickets?limit=20</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${token}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="interaction_write" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{"type":"NOTE","summary":"Benchmark write","details":"Synthetic fixture"}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp>
+          <stringProp name="HTTPSampler.port">${__P(port,8090)}</stringProp>
+          <stringProp name="HTTPSampler.protocol">http</stringProp>
+          <stringProp name="HTTPSampler.path">/api/customers/${customerId}/interactions</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">3000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">10000</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Bearer authentication" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Authorization</stringProp>
+                <stringProp name="Header.value">Bearer ${staffToken}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value">application/json</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree />
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Validate response and record upstream" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def match = (prev.getResponseHeaders() =~ /(?im)^X-CRM-Upstream: ([^\r\n]+)/)
+vars.put('upstream', match.find() ? match.group(1).trim() : 'unknown')
+if (!prev.isSuccessful()) return
+try {
+  def data = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def label = prev.getSampleLabel()
+  if (label == 'profile') assert data.id == vars.get('customerId')
+  else if (label == 'interaction_write') { assert prev.getResponseCode() == '201'; assert data.customerId == vars.get('customerId'); assert data.id }
+  else { assert data instanceof List; assert data.size() &lt;= 20
+    if (label in ['history','tickets']) assert data.every { it.customerId == vars.get('customerId') }
+    if (label in ['search','autocomplete']) { assert data.size() &gt; 0; assert data.every { it.fullName.toLowerCase().startsWith('benchmark customer 0000') } }
+  }
+} catch (Exception | AssertionError error) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Response content validation failed') }
+</stringProp>
+          </JSR223Assertion>
+          <hashTree />
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

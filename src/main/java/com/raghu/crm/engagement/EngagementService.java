@@ -1,6 +1,7 @@
 package com.raghu.crm.engagement;
 
 import com.raghu.crm.customer.Customer;
+import com.raghu.crm.notifications.OutboxService;
 import com.raghu.crm.sales.LeadService;
 import com.raghu.crm.sales.SalesException;
 import com.raghu.crm.sales.SalesRepresentativeService;
@@ -32,14 +33,16 @@ public class EngagementService {
 	private final LeadService leads;
 	private final SalesRepresentativeService representatives;
 	private final MeterRegistry metrics;
+	private final OutboxService outbox;
 
 	public EngagementService(ShardRouter router, SnowflakeIdGenerator ids, LeadService leads,
-			SalesRepresentativeService representatives, MeterRegistry metrics) {
+			SalesRepresentativeService representatives, MeterRegistry metrics, OutboxService outbox) {
 		this.router = router;
 		this.ids = ids;
 		this.leads = leads;
 		this.representatives = representatives;
 		this.metrics = metrics;
+		this.outbox = outbox;
 	}
 
 	public void initializeIndexes(MongoShardRegistry shards) {
@@ -98,8 +101,10 @@ public class EngagementService {
 		Instant now = now();
 		SalesActivity activity = new SalesActivity(id, customerId, request.leadId(), request.type(), request.title().strip(),
 			clean(request.description()), representative, millis(request.dueAt()), ActivityStatus.OPEN,
-			now, actorId, now, null, null, null, 0);
+			now, actorId, now, null, null, null, 0,
+			outbox.event(customerId, "ACTIVITY", id, "CREATED", request.title().strip(), "Follow-up due " + request.dueAt(), actorId, true));
 		template.insert(activity);
+		outbox.tryDelivery(customerId, "activities", id);
 		metrics.counter("crm.engagement.created", "entity", "activity").increment();
 		return activity;
 	}
@@ -124,13 +129,17 @@ public class EngagementService {
 		if (request.status() == ActivityStatus.OPEN) {
 			throw new SalesException(HttpStatus.CONFLICT, "Activities can be completed or cancelled; closed tasks cannot reopen");
 		}
+		outbox.flush(customerId, "activities", id);
+		SalesActivity current = activity(customerId, id);
 		Query query = key(customerId, id);
-		query.addCriteria(Criteria.where("version").is(request.version()).and("status").is(ActivityStatus.OPEN));
+		query.addCriteria(Criteria.where("version").is(request.version()).and("status").is(ActivityStatus.OPEN).and("pendingEvent").is(null));
 		Instant now = now();
 		Timer.Sample sample = Timer.start(metrics);
 		try {
 			SalesActivity changed = router.templateFor(customerId).findAndModify(query,
 				new Update().set("status", request.status()).set("outcome", clean(request.outcome()))
+					.set("pendingEvent", outbox.event(customerId, "ACTIVITY", id, "CLOSED", current.title(),
+						"Activity " + request.status() + (request.outcome() == null ? "" : ": " + request.outcome().strip()), actorId, true))
 					.set("closedAt", now).set("closedBy", actorId).set("updatedAt", now).inc("version", 1),
 				FindAndModifyOptions.options().returnNew(true), SalesActivity.class);
 			if (changed == null) {
@@ -139,6 +148,7 @@ public class EngagementService {
 				throw new SalesException(HttpStatus.CONFLICT, "Activity is closed or its version changed; reload before retrying");
 			}
 			metrics.counter("crm.activity.changes", "outcome", "success").increment();
+			outbox.tryDelivery(customerId, "activities", id);
 			return changed;
 		}
 		finally {

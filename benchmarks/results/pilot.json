@@ -1,0 +1,239 @@
+{
+  "requests": 1284,
+  "measured_seconds": 4.916,
+  "mean_ms": 18.459,
+  "p95_ms": 62,
+  "throughput_rps": 261.188,
+  "success_pct": 100.0,
+  "error_pct": 0.0,
+  "status_counts": {
+    "200": 1070,
+    "201": 214
+  },
+  "upstream_counts": {
+    "172.18.0.6:8080": 1284
+  },
+  "endpoints": {
+    "autocomplete": {
+      "requests": 214,
+      "mean_ms": 22.388,
+      "p95_ms": 64,
+      "errors": 0
+    },
+    "history": {
+      "requests": 215,
+      "mean_ms": 17.837,
+      "p95_ms": 62,
+      "errors": 0
+    },
+    "interaction_write": {
+      "requests": 214,
+      "mean_ms": 17.523,
+      "p95_ms": 61,
+      "errors": 0
+    },
+    "profile": {
+      "requests": 213,
+      "mean_ms": 18.714,
+      "p95_ms": 62,
+      "errors": 0
+    },
+    "search": {
+      "requests": 213,
+      "mean_ms": 21.174,
+      "p95_ms": 64,
+      "errors": 0
+    },
+    "tickets": {
+      "requests": 215,
+      "mean_ms": 13.158,
+      "p95_ms": 55,
+      "errors": 0
+    }
+  },
+  "name": "pilot",
+  "concurrency": 5,
+  "customers": 200,
+  "resources": [
+    {
+      "time": 1792876910.0623438,
+      "name": "sdminiproj-baseline-gateway-1",
+      "cpu_pct": 0.08,
+      "memory": "8.723MiB"
+    },
+    {
+      "time": 1792876910.06238,
+      "name": "sdminiproj-app-1-1",
+      "cpu_pct": 13.44,
+      "memory": "318.6MiB"
+    },
+    {
+      "time": 1792876910.062386,
+      "name": "sdminiproj-mongodb-shard-1-1",
+      "cpu_pct": 1.91,
+      "memory": "152MiB"
+    },
+    {
+      "time": 1792876910.0623949,
+      "name": "sdminiproj-mongodb-shard-2-1",
+      "cpu_pct": 29.98,
+      "memory": "156.5MiB"
+    },
+    {
+      "time": 1792876910.062399,
+      "name": "sdminiproj-redis-1",
+      "cpu_pct": 0.23,
+      "memory": "12.6MiB"
+    },
+    {
+      "time": 1792876910.062403,
+      "name": "sdminiproj-mongodb-1",
+      "cpu_pct": 0.84,
+      "memory": "159.9MiB"
+    },
+    {
+      "time": 1792876913.2317572,
+      "name": "sdminiproj-baseline-gateway-1",
+      "cpu_pct": 2.38,
+      "memory": "8.766MiB"
+    },
+    {
+      "time": 1792876913.231776,
+      "name": "sdminiproj-app-1-1",
+      "cpu_pct": 120.64,
+      "memory": "332.3MiB"
+    },
+    {
+      "time": 1792876913.231781,
+      "name": "sdminiproj-mongodb-shard-1-1",
+      "cpu_pct": 25.23,
+      "memory": "285MiB"
+    },
+    {
+      "time": 1792876913.231785,
+      "name": "sdminiproj-mongodb-shard-2-1",
+      "cpu_pct": 3.68,
+      "memory": "156.5MiB"
+    },
+    {
+      "time": 1792876913.231788,
+      "name": "sdminiproj-redis-1",
+      "cpu_pct": 1.53,
+      "memory": "12.7MiB"
+    },
+    {
+      "time": 1792876913.2317922,
+      "name": "sdminiproj-mongodb-1",
+      "cpu_pct": 26.1,
+      "memory": "291.3MiB"
+    },
+    {
+      "time": 1792876916.284203,
+      "name": "sdminiproj-baseline-gateway-1",
+      "cpu_pct": 5.38,
+      "memory": "8.98MiB"
+    },
+    {
+      "time": 1792876916.284232,
+      "name": "sdminiproj-app-1-1",
+      "cpu_pct": 202.98,
+      "memory": "352.6MiB"
+    },
+    {
+      "time": 1792876916.2842398,
+      "name": "sdminiproj-mongodb-shard-1-1",
+      "cpu_pct": 7.3,
+      "memory": "152.2MiB"
+    },
+    {
+      "time": 1792876916.284248,
+      "name": "sdminiproj-mongodb-shard-2-1",
+      "cpu_pct": 6.66,
+      "memory": "156.3MiB"
+    },
+    {
+      "time": 1792876916.284255,
+      "name": "sdminiproj-redis-1",
+      "cpu_pct": 3.27,
+      "memory": "12.86MiB"
+    },
+    {
+      "time": 1792876916.2842739,
+      "name": "sdminiproj-mongodb-1",
+      "cpu_pct": 6.15,
+      "memory": "160MiB"
+    },
+    {
+      "time": 1792876919.382642,
+      "name": "sdminiproj-baseline-gateway-1",
+      "cpu_pct": 7.15,
+      "memory": "8.996MiB"
+    },
+    {
+      "time": 1792876919.382667,
+      "name": "sdminiproj-app-1-1",
+      "cpu_pct": 201.64,
+      "memory": "360.9MiB"
+    },
+    {
+      "time": 1792876919.382676,
+      "name": "sdminiproj-mongodb-shard-1-1",
+      "cpu_pct": 62.91,
+      "memory": "315MiB"
+    },
+    {
+      "time": 1792876919.3826828,
+      "name": "sdminiproj-mongodb-shard-2-1",
+      "cpu_pct": 37.61,
+      "memory": "303MiB"
+    },
+    {
+      "time": 1792876919.3826911,
+      "name": "sdminiproj-redis-1",
+      "cpu_pct": 3.75,
+      "memory": "12.79MiB"
+    },
+    {
+      "time": 1792876919.382698,
+      "name": "sdminiproj-mongodb-1",
+      "cpu_pct": 70.15,
+      "memory": "160.1MiB"
+    },
+    {
+      "time": 1792876922.48668,
+      "name": "sdminiproj-baseline-gateway-1",
+      "cpu_pct": 4.31,
+      "memory": "8.852MiB"
+    },
+    {
+      "time": 1792876922.4867148,
+      "name": "sdminiproj-app-1-1",
+      "cpu_pct": 97.95,
+      "memory": "369.4MiB"
+    },
+    {
+      "time": 1792876922.4867232,
+      "name": "sdminiproj-mongodb-shard-1-1",
+      "cpu_pct": 4.97,
+      "memory": "152.3MiB"
+    },
+    {
+      "time": 1792876922.48673,
+      "name": "sdminiproj-mongodb-shard-2-1",
+      "cpu_pct": 5.18,
+      "memory": "156.3MiB"
+    },
+    {
+      "time": 1792876922.486737,
+      "name": "sdminiproj-redis-1",
+      "cpu_pct": 3.91,
+      "memory": "12.49MiB"
+    },
+    {
+      "time": 1792876922.4867442,
+      "name": "sdminiproj-mongodb-1",
+      "cpu_pct": 9.64,
+      "memory": "160.1MiB"
+    }
+  ]
+}

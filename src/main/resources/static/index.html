@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#123d36">
+  <title>Relay CRM</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <section id="auth" class="auth-layout">
+    <div class="auth-story">
+      <a class="brand" href="/" aria-label="Relay CRM home"><img src="/favicon.svg" alt="" width="38" height="38"> relay<span>CRM</span></a>
+      <div><p class="eyebrow">KEEP EVERY CONNECTION MOVING</p><h1>One place.<br>Every customer.<br>The next step.</h1><p class="story-copy">Customer relationships, sales follow-ups, and support conversations in one shared workspace.</p></div>
+      <p class="story-footer">RELAY / CUSTOMER WORKSPACE</p>
+    </div>
+    <main id="main" class="auth-card" tabindex="-1">
+      <p class="eyebrow">YOUR WORKSPACE</p><h2 id="auth-title">Welcome back.</h2><p id="auth-copy" class="muted">Sign in to continue your customer conversations.</p>
+      <div class="tabs" aria-label="Account access"><button id="login-tab" class="active" aria-pressed="true">Sign in</button><button id="register-tab" aria-pressed="false">Create account</button></div>
+      <form id="auth-form">
+        <div id="register-fields" hidden><label for="fullName">Full name</label><input id="fullName" name="fullName" maxlength="120" autocomplete="name"><label for="company">Company <span class="muted">(optional)</span></label><input id="company" name="company" maxlength="160" autocomplete="organization"></div>
+        <label for="email">Email address</label><input id="email" name="email" type="email" maxlength="254" autocomplete="username" required>
+        <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="primary wide" type="submit" id="auth-submit">Sign in</button>
+      </form>
+      <p class="muted small">Your session stays in this tab. Refreshing the page requires signing in again.</p>
+    </main>
+  </section>
+  <div id="app" class="app-layout" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Relay CRM home"><img src="/favicon.svg" alt="" width="34" height="34"> relay<span>CRM</span></a>
+      <p class="nav-caption">WORKSPACE</p>
+      <nav aria-label="Main navigation"><button id="nav-workspace">Customer workspace</button><button id="nav-desk" hidden>Support desk</button><button id="nav-inbox">My inbox</button></nav>
+      <div class="sidebar-bottom"><p id="identity"></p><span id="role" class="role"></span><button id="logout" class="quiet">Sign out</button></div>
+    </aside>
+    <div class="app-body">
+      <header class="topbar"><p class="muted">Relationships in motion.</p><div id="search-wrap" class="search-wrap" hidden><label class="sr-only" for="customer-search">Search customers by name</label><input id="customer-search" type="search" placeholder="Find a customer by name…" autocomplete="off" maxlength="120" aria-controls="search-results"><div id="search-results" class="search-results" role="region" aria-label="Customer search results" hidden></div></div></header>
+      <main id="workspace" tabindex="-1"></main>
+      <footer class="app-footer">Relay CRM · Customer workspace</footer>
+    </div>
+  </div>
+</body>
+</html>

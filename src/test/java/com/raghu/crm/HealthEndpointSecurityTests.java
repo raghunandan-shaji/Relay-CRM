@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @SpringBootTest(properties = {
 	"management.health.mongodb.enabled=false",
@@ -43,6 +45,14 @@ class HealthEndpointSecurityTests {
 		mockMvc.perform(get("/actuator/health"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.status").value("UP"));
+	}
+
+	@Test
+	void metricsRequireStaffScope() throws Exception {
+		mockMvc.perform(get("/actuator/metrics")).andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/actuator/metrics").with(jwt())).andExpect(status().isForbidden());
+		mockMvc.perform(get("/actuator/metrics/jvm.memory.used").with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_crm:staff"))))
+			.andExpect(status().isOk()).andExpect(jsonPath("$.name").value("jvm.memory.used"));
 	}
 
 	@Test

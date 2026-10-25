@@ -1,0 +1,152 @@
+[
+  {
+    "system": "baseline",
+    "concurrency": 5,
+    "trials": 2,
+    "requests": 18516,
+    "mean_ms": 10.286454957874271,
+    "p95_ms": 46,
+    "throughput_rps": 464.0717812476503,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 194.645,
+    "sum_peak_app_memory_mib": 459.1,
+    "by_app": {
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 194.65,
+        "memory_peak_mib": 459.1,
+        "samples": 12
+      }
+    }
+  },
+  {
+    "system": "baseline",
+    "concurrency": 20,
+    "trials": 2,
+    "requests": 23148,
+    "mean_ms": 33.87247278382581,
+    "p95_ms": 87,
+    "throughput_rps": 580.8928705864638,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 206.20916666666668,
+    "sum_peak_app_memory_mib": 461.1,
+    "by_app": {
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 206.21,
+        "memory_peak_mib": 461.1,
+        "samples": 12
+      }
+    }
+  },
+  {
+    "system": "baseline",
+    "concurrency": 60,
+    "trials": 2,
+    "requests": 26716,
+    "mean_ms": 88.57916604282079,
+    "p95_ms": 314,
+    "throughput_rps": 667.2994305125387,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 206.96769230769232,
+    "sum_peak_app_memory_mib": 467.4,
+    "by_app": {
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 206.97,
+        "memory_peak_mib": 467.4,
+        "samples": 13
+      }
+    }
+  },
+  {
+    "system": "scaled",
+    "concurrency": 5,
+    "trials": 2,
+    "requests": 16237,
+    "mean_ms": 11.671183100326415,
+    "p95_ms": 27,
+    "throughput_rps": 408.0058297316313,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 336.80583333333334,
+    "sum_peak_app_memory_mib": 1360.3,
+    "by_app": {
+      "sdminiproj-app-2-1": {
+        "cpu_mean_pct": 142.45,
+        "memory_peak_mib": 441.5,
+        "samples": 12
+      },
+      "sdminiproj-app-3-1": {
+        "cpu_mean_pct": 135.58,
+        "memory_peak_mib": 448.4,
+        "samples": 12
+      },
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 58.78,
+        "memory_peak_mib": 470.4,
+        "samples": 12
+      }
+    }
+  },
+  {
+    "system": "scaled",
+    "concurrency": 20,
+    "trials": 2,
+    "requests": 23285,
+    "mean_ms": 33.65939445995276,
+    "p95_ms": 87,
+    "throughput_rps": 582.7514578171534,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 420.78,
+    "sum_peak_app_memory_mib": 1369.7,
+    "by_app": {
+      "sdminiproj-app-2-1": {
+        "cpu_mean_pct": 166.83,
+        "memory_peak_mib": 449.0,
+        "samples": 12
+      },
+      "sdminiproj-app-3-1": {
+        "cpu_mean_pct": 159.77,
+        "memory_peak_mib": 450.0,
+        "samples": 12
+      },
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 94.18,
+        "memory_peak_mib": 470.7,
+        "samples": 12
+      }
+    }
+  },
+  {
+    "system": "scaled",
+    "concurrency": 60,
+    "trials": 2,
+    "requests": 26278,
+    "mean_ms": 90.38526524088591,
+    "p95_ms": 265,
+    "throughput_rps": 652.4157108098714,
+    "success_pct": 100.0,
+    "error_pct": 0.0,
+    "mean_app_cpu_pct": 447.45666666666665,
+    "sum_peak_app_memory_mib": 1368.6,
+    "by_app": {
+      "sdminiproj-app-2-1": {
+        "cpu_mean_pct": 160.06,
+        "memory_peak_mib": 447.4,
+        "samples": 12
+      },
+      "sdminiproj-app-3-1": {
+        "cpu_mean_pct": 165.63,
+        "memory_peak_mib": 450.4,
+        "samples": 12
+      },
+      "sdminiproj-app-1-1": {
+        "cpu_mean_pct": 121.76,
+        "memory_peak_mib": 470.8,
+        "samples": 12
+      }
+    }
+  }
+]

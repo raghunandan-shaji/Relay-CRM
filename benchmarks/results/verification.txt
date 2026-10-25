@@ -1,0 +1,23 @@
+Relay CRM verification evidence — 25 October 2026
+
+Full integration-enabled backend suite:
+Concurrent engagement: 32 logs persisted, 32 distinct IDs; 32 task closure attempts -> 1 success, 31 conflicts, version 1
+Outbox recovery: committed pending event delivered by restarted worker; crash-after-insert replay creates no duplicate and preserves readAt
+Concurrent support replies: 32 attempts, 1 success, 31 conflicts, exactly 1 new reply event
+Search explain over 600 fixtures on 3 shards: indexed documents examined=12, forced collection-scan baseline=803
+Remove-shard movement: 33.10%
+Add-shard movement: consistent 27.50%, modulo 75.01%
+Three-shard distribution: {shard-0=33091, shard-1=33810, shard-2=33099}
+Shared Redis quota: 2 limiter instances, 20 threads, 100 requests, 25 allowed, 75 rejected, 0 quota overshoot
+ID benchmark: 400,000 IDs, 2,501,532 IDs/second, 0 collisions
+[INFO] Tests run: 83, Failures: 0, Errors: 0, Skipped: 2
+
+Separate stopped-shard regression:
+MongoDB shard health during shard-2 failure: {shard-0=true, shard-1=true, shard-2=false}
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.523 s -- in com.raghu.crm.systemdesign.sharding.MongoShardFailureIntegrationTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+JavaScript helper tests: 2 passed (node --test benchmarks/frontend.test.mjs).
+Python harness/analysis tests: 3 passed (python3 -m unittest discover -s benchmarks -p test_*.py).
+Browser checks: registration/sign-in, owner inbox acknowledgement, staff customer search, lead creation/qualification/stage change, interaction logging, activity creation/completion, ticket reply/status changes.
+Benchmark fixture cleanup: 3,001 synthetic accounts and their associated records removed; original/demo accounts preserved.

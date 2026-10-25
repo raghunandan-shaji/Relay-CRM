@@ -1,0 +1,2383 @@
+{
+  "runs": [
+    {
+      "requests": 5324,
+      "measured_seconds": 19.969,
+      "mean_ms": 18.122,
+      "measurement_start_epoch": 1792924841.173,
+      "measurement_end_epoch": 1792924861.142,
+      "p95_ms": 59,
+      "throughput_rps": 266.613,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 4437,
+        "201": 887
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 5324
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 888,
+          "mean_ms": 24.332,
+          "p95_ms": 65,
+          "errors": 0
+        },
+        "history": {
+          "requests": 887,
+          "mean_ms": 15.405,
+          "p95_ms": 55,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 887,
+          "mean_ms": 17.161,
+          "p95_ms": 58,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 886,
+          "mean_ms": 14.773,
+          "p95_ms": 56,
+          "errors": 0
+        },
+        "search": {
+          "requests": 887,
+          "mean_ms": 22.572,
+          "p95_ms": 64,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 889,
+          "mean_ms": 14.486,
+          "p95_ms": 57,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c5-r1",
+      "concurrency": 5,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {},
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1014.0,
+              "TOTAL_TIME": 2.634571332,
+              "MAX": 0.058135583
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6076.0,
+              "TOTAL_TIME": 19.858721663,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2028.0,
+              "TOTAL_TIME": 26.318512344,
+              "MAX": 0.15603825
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1014.0,
+              "TOTAL_TIME": 13.34588732,
+              "MAX": 0.156077166
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1014.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 8764,
+      "measured_seconds": 19.945,
+      "mean_ms": 44.886,
+      "measurement_start_epoch": 1792924871.449,
+      "measurement_end_epoch": 1792924891.394,
+      "p95_ms": 98,
+      "throughput_rps": 439.408,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 7304,
+        "201": 1460
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 8764
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1458,
+          "mean_ms": 61.144,
+          "p95_ms": 110,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1460,
+          "mean_ms": 35.179,
+          "p95_ms": 82,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1460,
+          "mean_ms": 38.453,
+          "p95_ms": 89,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1463,
+          "mean_ms": 36.161,
+          "p95_ms": 80,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1462,
+          "mean_ms": 60.585,
+          "p95_ms": 129,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1461,
+          "mean_ms": 37.819,
+          "p95_ms": 86,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c20-r1",
+      "concurrency": 20,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1014.0,
+              "TOTAL_TIME": 2.634571332,
+              "MAX": 0.058135583
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6076.0,
+              "TOTAL_TIME": 19.858721663,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2028.0,
+              "TOTAL_TIME": 26.318512344,
+              "MAX": 0.15603825
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1014.0,
+              "TOTAL_TIME": 13.34588732,
+              "MAX": 0.156077166
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1014.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2897.0,
+              "TOTAL_TIME": 17.839422208,
+              "MAX": 0.125992834
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 17307.0,
+              "TOTAL_TIME": 136.445522199,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5779.0,
+              "TOTAL_TIME": 146.601063771,
+              "MAX": 0.369348375
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2886.0,
+              "TOTAL_TIME": 72.822805136,
+              "MAX": 0.369381333
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2897.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 10078,
+      "measured_seconds": 20.026,
+      "mean_ms": 117.116,
+      "measurement_start_epoch": 1792924902.547,
+      "measurement_end_epoch": 1792924922.573,
+      "p95_ms": 403,
+      "throughput_rps": 503.246,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 8398,
+        "201": 1680
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 10078
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1679,
+          "mean_ms": 248.173,
+          "p95_ms": 683,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1670,
+          "mean_ms": 40.602,
+          "p95_ms": 108,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1680,
+          "mean_ms": 45.694,
+          "p95_ms": 122,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1683,
+          "mean_ms": 42.806,
+          "p95_ms": 114,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1687,
+          "mean_ms": 247.851,
+          "p95_ms": 632,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1679,
+          "mean_ms": 76.758,
+          "p95_ms": 227,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c60-r1",
+      "concurrency": 60,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2897.0,
+              "TOTAL_TIME": 17.839422208,
+              "MAX": 0.125992834
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 17307.0,
+              "TOTAL_TIME": 136.445522199,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5779.0,
+              "TOTAL_TIME": 146.601063771,
+              "MAX": 0.369348375
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2886.0,
+              "TOTAL_TIME": 72.822805136,
+              "MAX": 0.369381333
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2897.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5015.0,
+              "TOTAL_TIME": 35.810144799,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 29836.0,
+              "TOTAL_TIME": 319.272754583,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9990.0,
+              "TOTAL_TIME": 1062.309889592,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4981.0,
+              "TOTAL_TIME": 535.697363601,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5015.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 13192,
+      "measured_seconds": 19.93,
+      "mean_ms": 7.124,
+      "measurement_start_epoch": 1792924933.066,
+      "measurement_end_epoch": 1792924952.996,
+      "p95_ms": 18,
+      "throughput_rps": 661.917,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 10994,
+        "201": 2198
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 13192
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2199,
+          "mean_ms": 9.921,
+          "p95_ms": 21,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2197,
+          "mean_ms": 6.079,
+          "p95_ms": 15,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2198,
+          "mean_ms": 6.259,
+          "p95_ms": 14,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2200,
+          "mean_ms": 4.651,
+          "p95_ms": 11,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2201,
+          "mean_ms": 10.362,
+          "p95_ms": 23,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2197,
+          "mean_ms": 5.468,
+          "p95_ms": 15,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c5-r2",
+      "concurrency": 5,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5015.0,
+              "TOTAL_TIME": 35.810144799,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 29836.0,
+              "TOTAL_TIME": 319.272754583,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9990.0,
+              "TOTAL_TIME": 1062.309889592,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4981.0,
+              "TOTAL_TIME": 535.697363601,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5015.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 7730.0,
+              "TOTAL_TIME": 37.871156533,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 46107.0,
+              "TOTAL_TIME": 335.284979195,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 15416.0,
+              "TOTAL_TIME": 1096.562156479,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 7693.0,
+              "TOTAL_TIME": 552.295223583,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 7730.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 14384,
+      "measured_seconds": 19.904,
+      "mean_ms": 27.162,
+      "measurement_start_epoch": 1792924963.798,
+      "measurement_end_epoch": 1792924983.702,
+      "p95_ms": 73,
+      "throughput_rps": 722.669,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 11986,
+        "201": 2398
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 14384
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2398,
+          "mean_ms": 40.952,
+          "p95_ms": 89,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2395,
+          "mean_ms": 19.997,
+          "p95_ms": 55,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2398,
+          "mean_ms": 20.072,
+          "p95_ms": 57,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2397,
+          "mean_ms": 19.096,
+          "p95_ms": 55,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2398,
+          "mean_ms": 42.344,
+          "p95_ms": 92,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2398,
+          "mean_ms": 20.5,
+          "p95_ms": 58,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c20-r2",
+      "concurrency": 20,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 7730.0,
+              "TOTAL_TIME": 37.871156533,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 46107.0,
+              "TOTAL_TIME": 335.284979195,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 15416.0,
+              "TOTAL_TIME": 1096.562156479,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 7693.0,
+              "TOTAL_TIME": 552.295223583,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 7730.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 10712.0,
+              "TOTAL_TIME": 49.417513802,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 63949.0,
+              "TOTAL_TIME": 427.780145479,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 21371.0,
+              "TOTAL_TIME": 1253.339531533,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 10668.0,
+              "TOTAL_TIME": 628.615969391,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 10712.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 16638,
+      "measured_seconds": 20.01,
+      "mean_ms": 71.294,
+      "measurement_start_epoch": 1792924993.951,
+      "measurement_end_epoch": 1792925013.961,
+      "p95_ms": 259,
+      "throughput_rps": 831.484,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 13868,
+        "201": 2770
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 16638
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2772,
+          "mean_ms": 162.786,
+          "p95_ms": 401,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2774,
+          "mean_ms": 20.503,
+          "p95_ms": 56,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2770,
+          "mean_ms": 20.118,
+          "p95_ms": 57,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2772,
+          "mean_ms": 19.637,
+          "p95_ms": 56,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2775,
+          "mean_ms": 160.486,
+          "p95_ms": 398,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2775,
+          "mean_ms": 44.164,
+          "p95_ms": 123,
+          "errors": 0
+        }
+      },
+      "name": "baseline-c60-r2",
+      "concurrency": 60,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 10712.0,
+              "TOTAL_TIME": 49.417513802,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 63949.0,
+              "TOTAL_TIME": 427.780145479,
+              "MAX": 0.4503105
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 21371.0,
+              "TOTAL_TIME": 1253.339531533,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 10668.0,
+              "TOTAL_TIME": 628.615969391,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 10712.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 14108.0,
+              "TOTAL_TIME": 63.682736339,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 84143.0,
+              "TOTAL_TIME": 561.742313777,
+              "MAX": 0.231539375
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 28136.0,
+              "TOTAL_TIME": 2266.968828301,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 14038.0,
+              "TOTAL_TIME": 1142.920588216,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 14108.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        }
+      }
+    },
+    {
+      "requests": 6053,
+      "measured_seconds": 19.861,
+      "mean_ms": 15.72,
+      "measurement_start_epoch": 1792925038.198,
+      "measurement_end_epoch": 1792925058.059,
+      "p95_ms": 36,
+      "throughput_rps": 304.768,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "201": 1009,
+        "200": 5044
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 2018,
+        "172.18.0.8:8080": 2018,
+        "172.18.0.9:8080": 2017
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1008,
+          "mean_ms": 19.477,
+          "p95_ms": 42,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1008,
+          "mean_ms": 13.835,
+          "p95_ms": 33,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1009,
+          "mean_ms": 15.06,
+          "p95_ms": 34,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1009,
+          "mean_ms": 13.024,
+          "p95_ms": 31,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1010,
+          "mean_ms": 19.773,
+          "p95_ms": 42,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1009,
+          "mean_ms": 13.151,
+          "p95_ms": 32,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c5-r1",
+      "concurrency": 5,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 14108.0,
+              "TOTAL_TIME": 63.682736339,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 84143.0,
+              "TOTAL_TIME": 561.742313777,
+              "MAX": 0.231539375
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 28136.0,
+              "TOTAL_TIME": 2266.968828301,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 14038.0,
+              "TOTAL_TIME": 1142.920588216,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 14108.0
+            }
+          },
+          "8082": {},
+          "8083": {}
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 14490.0,
+              "TOTAL_TIME": 64.057614964,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 86337.0,
+              "TOTAL_TIME": 564.865797582,
+              "MAX": 0.231539375
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 28833.0,
+              "TOTAL_TIME": 2271.97565397,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 14358.0,
+              "TOTAL_TIME": 1145.234805969,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 14490.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 360.0,
+              "TOTAL_TIME": 0.896687326,
+              "MAX": 0.023262166
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 2195.0,
+              "TOTAL_TIME": 9.587283684,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 747.0,
+              "TOTAL_TIME": 9.236535942,
+              "MAX": 0.423446375
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 384.0,
+              "TOTAL_TIME": 4.372186052,
+              "MAX": 0.111196666
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 360.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 357.0,
+              "TOTAL_TIME": 1.033013038,
+              "MAX": 0.028070417
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 2194.0,
+              "TOTAL_TIME": 10.044458423,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 752.0,
+              "TOTAL_TIME": 8.721381465,
+              "MAX": 0.165687625
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 393.0,
+              "TOTAL_TIME": 4.629097962,
+              "MAX": 0.165719792
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 357.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 10429,
+      "measured_seconds": 20.001,
+      "mean_ms": 37.661,
+      "measurement_start_epoch": 1792925070.583,
+      "measurement_end_epoch": 1792925090.584,
+      "p95_ms": 95,
+      "throughput_rps": 521.424,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 8691,
+        "201": 1738
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 3476,
+        "172.18.0.9:8080": 3477,
+        "172.18.0.8:8080": 3476
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1740,
+          "mean_ms": 48.446,
+          "p95_ms": 119,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1740,
+          "mean_ms": 31.075,
+          "p95_ms": 76,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1738,
+          "mean_ms": 34.971,
+          "p95_ms": 85,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1737,
+          "mean_ms": 30.883,
+          "p95_ms": 77,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1737,
+          "mean_ms": 49.636,
+          "p95_ms": 120,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1737,
+          "mean_ms": 30.95,
+          "p95_ms": 78,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c20-r1",
+      "concurrency": 20,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 14490.0,
+              "TOTAL_TIME": 64.057614964,
+              "MAX": 0.172478667
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 86337.0,
+              "TOTAL_TIME": 564.865797582,
+              "MAX": 0.231539375
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 28833.0,
+              "TOTAL_TIME": 2271.97565397,
+              "MAX": 1.541334501
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 14358.0,
+              "TOTAL_TIME": 1145.234805969,
+              "MAX": 1.380859543
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 14490.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 360.0,
+              "TOTAL_TIME": 0.896687326,
+              "MAX": 0.023262166
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 2195.0,
+              "TOTAL_TIME": 9.587283684,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 747.0,
+              "TOTAL_TIME": 9.236535942,
+              "MAX": 0.423446375
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 384.0,
+              "TOTAL_TIME": 4.372186052,
+              "MAX": 0.111196666
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 360.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 357.0,
+              "TOTAL_TIME": 1.033013038,
+              "MAX": 0.028070417
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 2194.0,
+              "TOTAL_TIME": 10.044458423,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 752.0,
+              "TOTAL_TIME": 8.721381465,
+              "MAX": 0.165687625
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 393.0,
+              "TOTAL_TIME": 4.629097962,
+              "MAX": 0.165719792
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 357.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 15215.0,
+              "TOTAL_TIME": 66.268856889,
+              "MAX": 0.146412375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 90699.0,
+              "TOTAL_TIME": 582.143138966,
+              "MAX": 0.205696459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 30314.0,
+              "TOTAL_TIME": 2292.537771198,
+              "MAX": 1.018043876
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 15104.0,
+              "TOTAL_TIME": 1154.836929392,
+              "MAX": 0.896264709
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 15215.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1082.0,
+              "TOTAL_TIME": 7.291712925,
+              "MAX": 0.113739125
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6557.0,
+              "TOTAL_TIME": 58.999013427,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2231.0,
+              "TOTAL_TIME": 57.887760343,
+              "MAX": 0.586127208
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1106.0,
+              "TOTAL_TIME": 27.925169369,
+              "MAX": 0.533834417
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1082.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1100.0,
+              "TOTAL_TIME": 7.064283351,
+              "MAX": 0.077849375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6557.0,
+              "TOTAL_TIME": 60.48885581,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2156.0,
+              "TOTAL_TIME": 54.454465672,
+              "MAX": 0.402983875
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1108.0,
+              "TOTAL_TIME": 27.795382983,
+              "MAX": 0.366552667
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1100.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 10644,
+      "measured_seconds": 20.183,
+      "mean_ms": 111.679,
+      "measurement_start_epoch": 1792925102.461,
+      "measurement_end_epoch": 1792925122.644,
+      "p95_ms": 344,
+      "throughput_rps": 527.375,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 8865,
+        "201": 1779
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 3548,
+        "172.18.0.9:8080": 3548,
+        "172.18.0.8:8080": 3548
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1769,
+          "mean_ms": 159.554,
+          "p95_ms": 476,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1777,
+          "mean_ms": 84.294,
+          "p95_ms": 235,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1779,
+          "mean_ms": 88.527,
+          "p95_ms": 239,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1773,
+          "mean_ms": 84.561,
+          "p95_ms": 250,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1772,
+          "mean_ms": 166.242,
+          "p95_ms": 545,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1774,
+          "mean_ms": 87.187,
+          "p95_ms": 259,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c60-r1",
+      "concurrency": 60,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 15215.0,
+              "TOTAL_TIME": 66.268856889,
+              "MAX": 0.146412375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 90699.0,
+              "TOTAL_TIME": 582.143138966,
+              "MAX": 0.205696459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 30314.0,
+              "TOTAL_TIME": 2292.537771198,
+              "MAX": 1.018043876
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 15104.0,
+              "TOTAL_TIME": 1154.836929392,
+              "MAX": 0.896264709
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 15215.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1082.0,
+              "TOTAL_TIME": 7.291712925,
+              "MAX": 0.113739125
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6557.0,
+              "TOTAL_TIME": 58.999013427,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2231.0,
+              "TOTAL_TIME": 57.887760343,
+              "MAX": 0.586127208
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1106.0,
+              "TOTAL_TIME": 27.925169369,
+              "MAX": 0.533834417
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1082.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1100.0,
+              "TOTAL_TIME": 7.064283351,
+              "MAX": 0.077849375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 6557.0,
+              "TOTAL_TIME": 60.48885581,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 2156.0,
+              "TOTAL_TIME": 54.454465672,
+              "MAX": 0.402983875
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1108.0,
+              "TOTAL_TIME": 27.795382983,
+              "MAX": 0.366552667
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1100.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 15997.0,
+              "TOTAL_TIME": 71.402364614,
+              "MAX": 0.146412375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 95296.0,
+              "TOTAL_TIME": 637.149914332,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 31830.0,
+              "TOTAL_TIME": 2355.807561521,
+              "MAX": 1.018043876
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 15843.0,
+              "TOTAL_TIME": 1185.588989493,
+              "MAX": 0.896264709
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 15997.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1850.0,
+              "TOTAL_TIME": 23.353635523,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 11154.0,
+              "TOTAL_TIME": 224.667761336,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 3777.0,
+              "TOTAL_TIME": 257.334787197,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1871.0,
+              "TOTAL_TIME": 125.183321334,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1850.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1873.0,
+              "TOTAL_TIME": 24.009401116,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 11154.0,
+              "TOTAL_TIME": 216.448748481,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 3713.0,
+              "TOTAL_TIME": 239.722694453,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1906.0,
+              "TOTAL_TIME": 120.426093875,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1873.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 10184,
+      "measured_seconds": 19.935,
+      "mean_ms": 9.264,
+      "measurement_start_epoch": 1792925133.88,
+      "measurement_end_epoch": 1792925153.815,
+      "p95_ms": 19,
+      "throughput_rps": 510.86,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 8487,
+        "201": 1697
+      },
+      "upstream_counts": {
+        "172.18.0.8:8080": 3395,
+        "172.18.0.9:8080": 3395,
+        "172.18.0.6:8080": 3394
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 1697,
+          "mean_ms": 11.892,
+          "p95_ms": 23,
+          "errors": 0
+        },
+        "history": {
+          "requests": 1698,
+          "mean_ms": 8.188,
+          "p95_ms": 17,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 1697,
+          "mean_ms": 8.695,
+          "p95_ms": 18,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 1698,
+          "mean_ms": 6.95,
+          "p95_ms": 14,
+          "errors": 0
+        },
+        "search": {
+          "requests": 1697,
+          "mean_ms": 12.54,
+          "p95_ms": 24,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 1697,
+          "mean_ms": 7.323,
+          "p95_ms": 15,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c5-r2",
+      "concurrency": 5,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 15997.0,
+              "TOTAL_TIME": 71.402364614,
+              "MAX": 0.146412375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 95296.0,
+              "TOTAL_TIME": 637.149914332,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 31830.0,
+              "TOTAL_TIME": 2355.807561521,
+              "MAX": 1.018043876
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 15843.0,
+              "TOTAL_TIME": 1185.588989493,
+              "MAX": 0.896264709
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 15997.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1850.0,
+              "TOTAL_TIME": 23.353635523,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 11154.0,
+              "TOTAL_TIME": 224.667761336,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 3777.0,
+              "TOTAL_TIME": 257.334787197,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1871.0,
+              "TOTAL_TIME": 125.183321334,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1850.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 1873.0,
+              "TOTAL_TIME": 24.009401116,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 11154.0,
+              "TOTAL_TIME": 216.448748481,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 3713.0,
+              "TOTAL_TIME": 239.722694453,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 1906.0,
+              "TOTAL_TIME": 120.426093875,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 1873.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 16664.0,
+              "TOTAL_TIME": 72.076583477,
+              "MAX": 0.111153958
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 99547.0,
+              "TOTAL_TIME": 642.214862415,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 33288.0,
+              "TOTAL_TIME": 2365.549297431,
+              "MAX": 0.425699667
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 16565.0,
+              "TOTAL_TIME": 1190.276030498,
+              "MAX": 0.423168751
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 16664.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2576.0,
+              "TOTAL_TIME": 24.348487317,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 15405.0,
+              "TOTAL_TIME": 230.042903678,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5178.0,
+              "TOTAL_TIME": 266.300973021,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2577.0,
+              "TOTAL_TIME": 129.580685517,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2576.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2608.0,
+              "TOTAL_TIME": 24.894155747,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 15405.0,
+              "TOTAL_TIME": 221.743767899,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5108.0,
+              "TOTAL_TIME": 248.986788696,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2605.0,
+              "TOTAL_TIME": 124.857509496,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2608.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 12856,
+      "measured_seconds": 19.956,
+      "mean_ms": 30.413,
+      "measurement_start_epoch": 1792925165.871,
+      "measurement_end_epoch": 1792925185.827,
+      "p95_ms": 80,
+      "throughput_rps": 644.217,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 10713,
+        "201": 2143
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 4286,
+        "172.18.0.9:8080": 4285,
+        "172.18.0.8:8080": 4285
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2143,
+          "mean_ms": 39.919,
+          "p95_ms": 98,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2141,
+          "mean_ms": 25.537,
+          "p95_ms": 65,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2143,
+          "mean_ms": 28.021,
+          "p95_ms": 73,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2144,
+          "mean_ms": 23.278,
+          "p95_ms": 60,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2142,
+          "mean_ms": 41.625,
+          "p95_ms": 103,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2143,
+          "mean_ms": 24.102,
+          "p95_ms": 66,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c20-r2",
+      "concurrency": 20,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 16664.0,
+              "TOTAL_TIME": 72.076583477,
+              "MAX": 0.111153958
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 99547.0,
+              "TOTAL_TIME": 642.214862415,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 33288.0,
+              "TOTAL_TIME": 2365.549297431,
+              "MAX": 0.425699667
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 16565.0,
+              "TOTAL_TIME": 1190.276030498,
+              "MAX": 0.423168751
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 16664.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2576.0,
+              "TOTAL_TIME": 24.348487317,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 15405.0,
+              "TOTAL_TIME": 230.042903678,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5178.0,
+              "TOTAL_TIME": 266.300973021,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2577.0,
+              "TOTAL_TIME": 129.580685517,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2576.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 2608.0,
+              "TOTAL_TIME": 24.894155747,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 15405.0,
+              "TOTAL_TIME": 221.743767899,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 5108.0,
+              "TOTAL_TIME": 248.986788696,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 2605.0,
+              "TOTAL_TIME": 124.857509496,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 2608.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 17553.0,
+              "TOTAL_TIME": 75.768987933,
+              "MAX": 0.111153958
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 104974.0,
+              "TOTAL_TIME": 672.327992754,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 35082.0,
+              "TOTAL_TIME": 2403.086232483,
+              "MAX": 0.425699667
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 17465.0,
+              "TOTAL_TIME": 1208.708587618,
+              "MAX": 0.423168751
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 17553.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 3490.0,
+              "TOTAL_TIME": 28.847795541,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 20831.0,
+              "TOTAL_TIME": 265.787984388,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 7011.0,
+              "TOTAL_TIME": 308.751803137,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 3501.0,
+              "TOTAL_TIME": 150.323373779,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 3490.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 3528.0,
+              "TOTAL_TIME": 28.885055714,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 20831.0,
+              "TOTAL_TIME": 251.612561112,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 6916.0,
+              "TOTAL_TIME": 287.972427612,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 3497.0,
+              "TOTAL_TIME": 143.542587872,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 3528.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 15634,
+      "measured_seconds": 20.095,
+      "mean_ms": 75.888,
+      "measurement_start_epoch": 1792925198.382,
+      "measurement_end_epoch": 1792925218.477,
+      "p95_ms": 211,
+      "throughput_rps": 778.004,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 13029,
+        "201": 2605
+      },
+      "upstream_counts": {
+        "172.18.0.8:8080": 5211,
+        "172.18.0.6:8080": 5211,
+        "172.18.0.9:8080": 5212
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2609,
+          "mean_ms": 112.297,
+          "p95_ms": 296,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2603,
+          "mean_ms": 57.564,
+          "p95_ms": 149,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2605,
+          "mean_ms": 60.924,
+          "p95_ms": 158,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2611,
+          "mean_ms": 54.804,
+          "p95_ms": 148,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2604,
+          "mean_ms": 111.921,
+          "p95_ms": 284,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2602,
+          "mean_ms": 57.791,
+          "p95_ms": 154,
+          "errors": 0
+        }
+      },
+      "name": "scaled-c60-r2",
+      "concurrency": 60,
+      "customers": 200,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 17553.0,
+              "TOTAL_TIME": 75.768987933,
+              "MAX": 0.111153958
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 104974.0,
+              "TOTAL_TIME": 672.327992754,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 35082.0,
+              "TOTAL_TIME": 2403.086232483,
+              "MAX": 0.425699667
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 17465.0,
+              "TOTAL_TIME": 1208.708587618,
+              "MAX": 0.423168751
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 17553.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 3490.0,
+              "TOTAL_TIME": 28.847795541,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 20831.0,
+              "TOTAL_TIME": 265.787984388,
+              "MAX": 2.347483126
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 7011.0,
+              "TOTAL_TIME": 308.751803137,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 3501.0,
+              "TOTAL_TIME": 150.323373779,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 3490.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 3528.0,
+              "TOTAL_TIME": 28.885055714,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 20831.0,
+              "TOTAL_TIME": 251.612561112,
+              "MAX": 2.247204459
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 6916.0,
+              "TOTAL_TIME": 287.972427612,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 3497.0,
+              "TOTAL_TIME": 143.542587872,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 3528.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 18739.0,
+              "TOTAL_TIME": 86.855824738,
+              "MAX": 0.178799084
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 111710.0,
+              "TOTAL_TIME": 773.575124787,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 37335.0,
+              "TOTAL_TIME": 2538.133304575,
+              "MAX": 0.562243
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 18591.0,
+              "TOTAL_TIME": 1274.983643114,
+              "MAX": 0.562252542
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 18739.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 4603.0,
+              "TOTAL_TIME": 43.40361791,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 27568.0,
+              "TOTAL_TIME": 395.024573317,
+              "MAX": 0.423151709
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9301.0,
+              "TOTAL_TIME": 488.029590786,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4657.0,
+              "TOTAL_TIME": 239.536831511,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 4603.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 4629.0,
+              "TOTAL_TIME": 40.994541716,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 27568.0,
+              "TOTAL_TIME": 371.962053647,
+              "MAX": 0.590243458
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9138.0,
+              "TOTAL_TIME": 429.229013467,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4591.0,
+              "TOTAL_TIME": 216.940787161,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 4629.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 14798,
+      "measured_seconds": 19.972,
+      "mean_ms": 26.474,
+      "measurement_start_epoch": 1792925247.414,
+      "measurement_end_epoch": 1792925267.386,
+      "p95_ms": 70,
+      "throughput_rps": 740.937,
+      "success_pct": 100.0,
+      "error_pct": 0.0,
+      "status_counts": {
+        "200": 12331,
+        "201": 2467
+      },
+      "upstream_counts": {
+        "172.18.0.6:8080": 4933,
+        "172.18.0.9:8080": 4933,
+        "172.18.0.8:8080": 4932
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2468,
+          "mean_ms": 33.636,
+          "p95_ms": 87,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2463,
+          "mean_ms": 20.527,
+          "p95_ms": 53,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2467,
+          "mean_ms": 23.071,
+          "p95_ms": 59,
+          "errors": 0
+        },
+        "profile": {
+          "requests": 2468,
+          "mean_ms": 26.495,
+          "p95_ms": 68,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2467,
+          "mean_ms": 35.514,
+          "p95_ms": 90,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2465,
+          "mean_ms": 19.581,
+          "p95_ms": 51,
+          "errors": 0
+        }
+      },
+      "name": "growth-3000-c20",
+      "concurrency": 20,
+      "customers": 3000,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 18739.0,
+              "TOTAL_TIME": 86.855824738,
+              "MAX": 0.178799084
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 111710.0,
+              "TOTAL_TIME": 773.575124787,
+              "MAX": 0.368232042
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 37335.0,
+              "TOTAL_TIME": 2538.133304575,
+              "MAX": 0.562243
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 18591.0,
+              "TOTAL_TIME": 1274.983643114,
+              "MAX": 0.562252542
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 18739.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 4603.0,
+              "TOTAL_TIME": 43.40361791,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 27568.0,
+              "TOTAL_TIME": 395.024573317,
+              "MAX": 0.423151709
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9301.0,
+              "TOTAL_TIME": 488.029590786,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4657.0,
+              "TOTAL_TIME": 239.536831511,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 4603.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 4629.0,
+              "TOTAL_TIME": 40.994541716,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 27568.0,
+              "TOTAL_TIME": 371.962053647,
+              "MAX": 0.590243458
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 9138.0,
+              "TOTAL_TIME": 429.229013467,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 4591.0,
+              "TOTAL_TIME": 216.940787161,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 4629.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 19770.0,
+              "TOTAL_TIME": 90.4204706,
+              "MAX": 0.178799084
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 118004.0,
+              "TOTAL_TIME": 802.785120355,
+              "MAX": 0.2230065
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 39482.0,
+              "TOTAL_TIME": 2576.512920137,
+              "MAX": 0.562243
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 19665.0,
+              "TOTAL_TIME": 1293.634139466,
+              "MAX": 0.562252542
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 19770.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5663.0,
+              "TOTAL_TIME": 47.505621067,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 33861.0,
+              "TOTAL_TIME": 427.415070232,
+              "MAX": 0.423151709
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 11401.0,
+              "TOTAL_TIME": 527.769612511,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 5705.0,
+              "TOTAL_TIME": 258.375043674,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5663.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5694.0,
+              "TOTAL_TIME": 44.413227435,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 33861.0,
+              "TOTAL_TIME": 403.530873563,
+              "MAX": 0.590243458
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 11193.0,
+              "TOTAL_TIME": 467.16263093,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 5618.0,
+              "TOTAL_TIME": 235.171373575,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5694.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "requests": 15451,
+      "measured_seconds": 19.88,
+      "mean_ms": 25.108,
+      "measurement_start_epoch": 1792925278.131,
+      "measurement_end_epoch": 1792925298.011,
+      "p95_ms": 66,
+      "throughput_rps": 777.213,
+      "success_pct": 99.994,
+      "error_pct": 0.006,
+      "status_counts": {
+        "200": 12874,
+        "201": 2576,
+        "502": 1
+      },
+      "upstream_counts": {
+        "172.18.0.9:8080": 6786,
+        "172.18.0.8:8080": 1871,
+        "172.18.0.6:8080": 6784,
+        "172.18.0.8:8080, 172.18.0.6:8080": 5,
+        "172.18.0.8:8080, 172.18.0.9:8080": 5
+      },
+      "endpoints": {
+        "autocomplete": {
+          "requests": 2575,
+          "mean_ms": 34.33,
+          "p95_ms": 86,
+          "errors": 0
+        },
+        "history": {
+          "requests": 2575,
+          "mean_ms": 20.534,
+          "p95_ms": 52,
+          "errors": 0
+        },
+        "interaction_write": {
+          "requests": 2577,
+          "mean_ms": 22.496,
+          "p95_ms": 57,
+          "errors": 1
+        },
+        "profile": {
+          "requests": 2573,
+          "mean_ms": 19.606,
+          "p95_ms": 51,
+          "errors": 0
+        },
+        "search": {
+          "requests": 2577,
+          "mean_ms": 34.412,
+          "p95_ms": 84,
+          "errors": 0
+        },
+        "tickets": {
+          "requests": 2574,
+          "mean_ms": 19.258,
+          "p95_ms": 52,
+          "errors": 0
+        }
+      },
+      "name": "app-outage-c20",
+      "concurrency": 20,
+      "customers": 3000,
+      "component_metrics": {
+        "before": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 19770.0,
+              "TOTAL_TIME": 90.4204706,
+              "MAX": 0.178799084
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 118004.0,
+              "TOTAL_TIME": 802.785120355,
+              "MAX": 0.2230065
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 39482.0,
+              "TOTAL_TIME": 2576.512920137,
+              "MAX": 0.562243
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 19665.0,
+              "TOTAL_TIME": 1293.634139466,
+              "MAX": 0.562252542
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 19770.0
+            }
+          },
+          "8082": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5663.0,
+              "TOTAL_TIME": 47.505621067,
+              "MAX": 0.235924375
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 33861.0,
+              "TOTAL_TIME": 427.415070232,
+              "MAX": 0.423151709
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 11401.0,
+              "TOTAL_TIME": 527.769612511,
+              "MAX": 0.970091709
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 5705.0,
+              "TOTAL_TIME": 258.375043674,
+              "MAX": 0.869370875
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5663.0
+            }
+          },
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 5694.0,
+              "TOTAL_TIME": 44.413227435,
+              "MAX": 0.314141792
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 33861.0,
+              "TOTAL_TIME": 403.530873563,
+              "MAX": 0.590243458
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 11193.0,
+              "TOTAL_TIME": 467.16263093,
+              "MAX": 0.969215792
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 5618.0,
+              "TOTAL_TIME": 235.171373575,
+              "MAX": 0.698889084
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 5694.0
+            }
+          }
+        },
+        "after": {
+          "8081": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 21114.0,
+              "TOTAL_TIME": 94.486850916,
+              "MAX": 0.178799084
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 126003.0,
+              "TOTAL_TIME": 838.770694792,
+              "MAX": 0.2230065
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 42164.0,
+              "TOTAL_TIME": 2624.116685038,
+              "MAX": 0.562243
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 21006.0,
+              "TOTAL_TIME": 1316.911721306,
+              "MAX": 0.562252542
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 21114.0
+            }
+          },
+          "8082": {},
+          "8083": {
+            "crm.customer_cache.lookup": {
+              "COUNT": 7027.0,
+              "TOTAL_TIME": 49.526834019,
+              "MAX": 0.164905583
+            },
+            "crm.rate_limit.lookup": {
+              "COUNT": 41862.0,
+              "TOTAL_TIME": 443.985918569,
+              "MAX": 0.232954916
+            },
+            "crm.customer_search.lookup": {
+              "COUNT": 13831.0,
+              "TOTAL_TIME": 517.208019917,
+              "MAX": 0.550437167
+            },
+            "crm.customer_autocomplete.lookup": {
+              "COUNT": 6939.0,
+              "TOTAL_TIME": 259.721368337,
+              "MAX": 0.499234
+            },
+            "crm.customer_cache.requests": {
+              "COUNT": 7027.0
+            }
+          }
+        }
+      },
+      "fault": {
+        "requested_at_epoch": 1792925286.234596,
+        "stopped_at_epoch": 1792925287.715816
+      }
+    }
+  ],
+  "distribution": {
+    "shard-0": 987,
+    "shard-1": 1009,
+    "shard-2": 1004
+  },
+  "baseline_customers": 200,
+  "growth_customers": 3000,
+  "warmup_seconds": 7,
+  "requested_measurement_seconds": 20,
+  "repeats": 2,
+  "request_mix": "equal profile/search/autocomplete/history/tickets/interaction_write",
+  "environment": {
+    "machine": "arm64",
+    "docker": "Docker Compose version v5.6.1",
+    "jmeter": "5.6.3",
+    "jvm_heap_per_app_mb": 384
+  },
+  "rate_limit_api": 1000000
+}

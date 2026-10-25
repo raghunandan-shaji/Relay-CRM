@@ -1,0 +1,55 @@
+x-crm: &crm
+  build: .
+  image: relay-crm:local
+  restart: unless-stopped
+  mem_limit: 640m
+  cpus: 2
+  volumes:
+    - ./.local:/app/.local:ro
+  depends_on:
+    mongodb: {condition: service_healthy}
+    mongodb-shard-1: {condition: service_healthy}
+    mongodb-shard-2: {condition: service_healthy}
+    redis: {condition: service_healthy}
+  environment: &crm-environment
+    JAVA_TOOL_OPTIONS: -Xms128m -Xmx384m
+    SERVER_ADDRESS: 0.0.0.0
+    MONGODB_SHARD_0_URI: mongodb://mongodb:27017/crm?serverSelectionTimeoutMS=1000&connectTimeoutMS=1000
+    MONGODB_SHARD_1_URI: mongodb://mongodb-shard-1:27017/crm?serverSelectionTimeoutMS=1000&connectTimeoutMS=1000
+    MONGODB_SHARD_2_URI: mongodb://mongodb-shard-2:27017/crm?serverSelectionTimeoutMS=1000&connectTimeoutMS=1000
+    MONGODB_URI: mongodb://mongodb:27017/crm
+    REDIS_URL: redis://redis:6379
+    CRM_STAFF_EMAILS: ${CRM_STAFF_EMAILS:-raghu.demo@crm.local}
+    RATE_LIMIT_API: ${RATE_LIMIT_API:-120}
+    RATE_LIMIT_LOGIN: ${RATE_LIMIT_LOGIN:-10}
+    CUSTOMER_CACHE_TTL: ${CUSTOMER_CACHE_TTL:-60s}
+
+services:
+  app-1:
+    <<: *crm
+    ports: ["127.0.0.1:8081:8080"]
+    environment:
+      <<: *crm-environment
+      ID_WORKER_ID: 20
+  app-2:
+    <<: *crm
+    ports: ["127.0.0.1:8082:8080"]
+    environment:
+      <<: *crm-environment
+      ID_WORKER_ID: 21
+  app-3:
+    <<: *crm
+    ports: ["127.0.0.1:8083:8080"]
+    environment:
+      <<: *crm-environment
+      ID_WORKER_ID: 22
+  gateway:
+    image: nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+    ports: ["127.0.0.1:8090:80"]
+    volumes: ["./infra/nginx.conf:/etc/nginx/conf.d/default.conf:ro"]
+    depends_on: [app-1, app-2, app-3]
+  baseline-gateway:
+    image: nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+    ports: ["127.0.0.1:8091:80"]
+    volumes: ["./infra/nginx-baseline.conf:/etc/nginx/conf.d/default.conf:ro"]
+    depends_on: [app-1]

@@ -3,6 +3,7 @@ package com.raghu.crm.engagement;
 import com.jayway.jsonpath.JsonPath;
 import com.raghu.crm.customer.*;
 import com.raghu.crm.sales.*;
+import com.raghu.crm.notifications.CustomerEvent;
 import com.raghu.crm.systemdesign.id.SnowflakeIdGenerator;
 import com.raghu.crm.systemdesign.sharding.MongoShardRegistry;
 import com.raghu.crm.systemdesign.sharding.ShardRouter;
@@ -68,7 +69,7 @@ class EngagementWorkflowIntegrationTests {
 	void cleanup() {
 		List<String> allIds = fixtures.stream().map(CustomerResponse::id).toList();
 		for (String shard : shards.shardIds()) {
-			for (Class<?> type : List.of(Interaction.class, SalesActivity.class, Lead.class)) {
+			for (Class<?> type : List.of(Interaction.class, SalesActivity.class, Lead.class, CustomerEvent.class)) {
 				shards.template(shard).remove(Query.query(Criteria.where("customerId").in(allIds)), type);
 			}
 			shards.template(shard).remove(Query.query(Criteria.where("_id").in(allIds)), Customer.class);

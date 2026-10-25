@@ -116,6 +116,7 @@
 						<crm.auth.secret-base64>dGVzdC1vbmx5LXNlY3JldC1kb250LXVzZS1pbi1wcm9kdWN0aW9u</crm.auth.secret-base64>
 						<crm.search.initialize>false</crm.search.initialize>
 						<crm.sales.initialize>false</crm.sales.initialize>
+						<crm.outbox.enabled>false</crm.outbox.enabled>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>

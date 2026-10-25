@@ -24,11 +24,18 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, RedisRateLimiter limiter, RateLimitProperties properties) throws Exception {
 		http.csrf(csrf -> csrf.disable())
+			.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives(
+				"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'")))
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.requestCache(cache -> cache.disable())
 			.authorizeHttpRequests(authorize -> authorize
 			.requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+			.requestMatchers(HttpMethod.GET, "/actuator/metrics", "/actuator/metrics/**").hasAuthority("SCOPE_crm:staff")
+			.requestMatchers(HttpMethod.GET, "/", "/index.html", "/app.js", "/ui.js", "/styles.css", "/favicon.svg").permitAll()
 			.requestMatchers(HttpMethod.POST, "/api/customers", "/api/auth/login").permitAll()
+			.requestMatchers("/api/support/**").hasAuthority("SCOPE_crm:staff")
+			.requestMatchers("/api/customers/*/tickets", "/api/customers/*/tickets/**",
+				"/api/customers/*/notifications", "/api/customers/*/notifications/**").authenticated()
 			.requestMatchers(HttpMethod.GET, "/api/customers/*/interactions", "/api/customers/*/interactions/**",
 				"/api/customers/*/activities", "/api/customers/*/activities/**").authenticated()
 			.requestMatchers("/api/customers/*/interactions", "/api/customers/*/interactions/**",

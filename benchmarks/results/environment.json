@@ -1,0 +1,15 @@
+{
+  "host_architecture": "arm64",
+  "macos": "26.6.2",
+  "host_memory_bytes": 17179869184,
+  "docker": {
+    "cpus": 8,
+    "memory_bytes": 8319770624,
+    "version": "29.9.2"
+  },
+  "jar_sha256": "7d8afb462eefeb14175e486c7b20811462e0e261d961a0b876ebbe2f24a33f10",
+  "nginx_image_digest": "sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951",
+  "java_base_digest": "sha256:227118764cccd3c3294617061aaa93a08309c63a395eefa83e6b35032992ea99",
+  "nginx_version": "nginx version: nginx/1.30.6",
+  "java_version": "Picked up JAVA_TOOL_OPTIONS: -Xms128m -Xmx384m\nopenjdk version \"21.0.12.1\" 2026-08-18 LTS\nOpenJDK Runtime Environment Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS, mixed mode, sharing)"
+}

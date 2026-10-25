@@ -7,6 +7,9 @@ HELP.md
 .DS_Store
 *.log
 target/
+__pycache__/
+*.pyc
+benchmarks/results/*.jtl
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

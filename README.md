@@ -1,6 +1,6 @@
 # Relay CRM — System Design Laboratory
 
-An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoint implements customer accounts, a sales pipeline, interaction history, sales activities, and several distributed-system components. The full CRM and its scalability evaluation are still in progress.
+A Java/Spring Boot CRM prototype for UCS3513, with a basic browser frontend, customer/staff workflows, three application processes, customer-sharded MongoDB storage, and reproducible performance/failure experiments. The documented limits are part of the result; this is not a claim of production or million-user readiness.
 
 ## Current implementation
 
@@ -19,6 +19,10 @@ An incremental Java/Spring Boot CRM prototype for UCS3513. The current checkpoin
 | Representative assignment | Consistent hashing over registered staff accounts; assignment is persisted |
 | Interaction history | Separate append-only records, indexed event-time cursor pagination, staff writes and owner/staff reads |
 | Sales activities | Planned work, representative assignment, filtered pagination, versioned completion/cancellation |
+| Customer support | Customer-owned tickets/conversations, staff queue/assignment, versioned status/replies |
+| Durable in-app notifications | Single-record atomic outbox, retrying workers, duplicate suppression, owner-only inbox acknowledgement |
+| Basic frontend | Locally served HTML/CSS/JavaScript; role-aware customer/staff workflows |
+| Application scale-out | Independent Java containers behind NGINX, shared JWT/data/quotas, unique worker IDs |
 
 The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
 
@@ -49,6 +53,18 @@ export JWT_SECRET="$(openssl rand -base64 32)"
 Do not commit signing secrets. Existing development setups may instead use the ignored `.local/jwt.properties` file described in [authentication.md](docs/authentication.md). Every application replica must share the same signing secret. Regenerating the secret invalidates existing tokens.
 
 The API binds to `http://127.0.0.1:8080`. MongoDB shard ports are 27017, 27018, and 27019; Redis uses 6379. Docker volumes retain local data between restarts. These local databases have no authentication and bind only to loopback; this configuration is not a public deployment.
+
+The same URL serves the frontend. See [frontend.md](docs/frontend.md) for screens and session behavior.
+
+For the independent three-process setup, first configure the shared ignored signing-key file as described in [benchmarks/README.md](benchmarks/README.md), then:
+
+```sh
+./mvnw -B -ntp package
+docker compose -f compose.yaml -f compose.scale.yaml build app-1
+docker compose -f compose.yaml -f compose.scale.yaml up -d app-1 app-2 app-3 gateway
+```
+
+Open `http://127.0.0.1:8090`. Direct replica ports are 8081/8082/8083, with worker IDs 20/21/22. The native app may run separately with worker 0. Configure staff emails identically across replicas. [demo.md](docs/demo.md) documents local demo accounts and the walkthrough.
 
 To stop infrastructure while keeping its data:
 
@@ -89,6 +105,10 @@ Staff-only leads/opportunities are available under `/api/customers/{customerId}/
 
 Interaction history and sales activities are under `/api/customers/{customerId}/interactions` and `/activities`. Staff create/manage them; customers can read their own records. All record contents are customer-visible. See [interactions-activities.md](docs/interactions-activities.md) for the Postman sequence, access rules, pagination, and limits.
 
+Support tickets are under `/api/customers/{customerId}/tickets`; staff can query `/api/support/tickets`. Customers create/reply/read their own conversations; staff advance status and assign responsibility. Inboxes are under `/api/customers/{customerId}/notifications` and accessible only to their recipient. [support-notifications.md](docs/support-notifications.md) specifies the durable outbox and API.
+
+Staff-only component metrics are exposed at `/actuator/metrics`. Health/liveness remains public; other management endpoints are denied.
+
 ## Verification
 
 ```sh
@@ -110,7 +130,7 @@ RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests tes
 docker compose start mongodb-shard-2
 ```
 
-Last full integration-enabled run at this checkpoint: **77 tests discovered, 76 passed, 1 deliberate outage test skipped, 0 failures/errors**.
+Last full integration-enabled run at this checkpoint: **83 tests discovered, 81 passed, 2 opt-in tests skipped, 0 failures/errors**. The stopped-shard test subsequently passed in its separate opt-in run; benchmark fixture tooling ran explicitly for seeding/cleanup. Two JavaScript helper tests and three Python harness tests also passed. Controlled API service failures are measured by the benchmark runner.
 
 Selected observed checks:
 
@@ -122,14 +142,23 @@ Selected observed checks:
 - Selective name-prefix query over 600 fixtures: 12 documents examined through the index versus 602 through the collection-scan baseline. Cache and staff-access checks passed; detailed results are in [customer-search-cache.md](docs/customer-search-cache.md).
 - 32 concurrent lead qualifications: 1 success, 31 conflicts, exactly 1 opportunity. Three-shard lead colocation, representative distribution, and exact decimal storage checks passed; see [sales-workflow.md](docs/sales-workflow.md).
 - 32 concurrent interaction inserts: all 32 persisted with distinct IDs. Of 32 concurrent task closures, exactly 1 succeeded and 31 conflicted. Owner/staff authorization, tied-timestamp history pagination, and three-shard engagement colocation passed; see [interactions-activities.md](docs/interactions-activities.md).
+- 32 concurrent support replies: 1 success, 31 conflicts, exactly 1 new reply event. Outbox interruption/replay tests preserved event uniqueness and read acknowledgement; see [support-notifications.md](docs/support-notifications.md).
+
+## Performance, architecture, and report
+
+- [Architecture diagram and requirement/component mapping](docs/architecture.md)
+- [Measured performance, resources, distribution, growth, and failures](docs/performance.md)
+- [Reproducible JMeter experiment](benchmarks/README.md) and [retained results](benchmarks/results/)
+- [Project report](docs/report.md) and [end-to-end demonstration](docs/demo.md)
+
+The server-count experiment uses one versus three independent JVM/container processes at 5/20/60 concurrent users, with two trials per configuration. It also expands synthetic customers from 200 to 3,000 and tests application/shard/Redis failures. Read the measured report for the actual results and experimental limitations.
 
 ## Remaining work and limits
 
-- Support tickets and notifications
-- Load-balancing application replicas and measuring performance at three workload levels
-- Controlled baseline comparisons, resource usage, failure/recovery measurements, and the final report
 - Replication/failover and safe data migration when changing shard membership
+- Registration/email-index crash recovery, creation-request idempotency, and stricter cache consistency
+- JWT revocation/refresh, broader operational/security hardening, backups, and independent-machine capacity tests
 
 Redis and each MongoDB shard are currently single points of failure. Registration spans Redis and MongoDB without a distributed transaction, so crashes or ambiguous writes can leave the email index inconsistent. Profile caching is eventually consistent. The limiter returns 503 when Redis quota checking fails. JWT refresh/revocation, full staff role management, HTTPS termination, and production operational hardening are not implemented yet.
 
-This checkpoint demonstrates implemented components and tested behavior; it does not establish production readiness or million-user capacity.
+The measured experiment is on one shared laptop. Its server-count baseline uses the same sharding/cache design, and its closed-loop tests are short. These results do not establish production readiness or million-user capacity.
