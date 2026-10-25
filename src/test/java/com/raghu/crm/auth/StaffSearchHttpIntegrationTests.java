@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnabledIfEnvironmentVariable(named = "RUN_INTEGRATION_TESTS", matches = "true")
@@ -105,6 +106,40 @@ class StaffSearchHttpIntegrationTests {
 		HttpResponse<String> response = request("POST", "/api/auth/login", "{\"email\":\"" + email + "\",\"password\":\"password-123\"}", null);
 		assertEquals(200, response.statusCode(), response.body());
 		return JsonPath.read(response.body(), "$.accessToken");
+	}
+
+	@Test
+	void directoryIsStaffOnlyAndCursorPagesDoNotLeakOrRepeatRecords() throws Exception {
+		List<CustomerResponse> created = new ArrayList<>();
+		try {
+			created.add(customers.create(new CreateCustomerRequest("Directory Staff", STAFF_EMAIL, "password-123", null, null)));
+			for (int i = 0; i < 6; i++) created.add(customers.create(new CreateCustomerRequest("Directory Customer " + i,
+				"directory-" + UUID.randomUUID() + "@example.com", "password-123", null, "Directory Fixture")));
+			String staff = login(STAFF_EMAIL), ordinary = login(created.getLast().email());
+			assertEquals(401, request("GET", "/api/customers", null, null).statusCode());
+			assertEquals(403, request("GET", "/api/customers", null, ordinary).statusCode());
+			assertEquals(400, request("GET", "/api/customers?limit=51", null, staff).statusCode());
+			assertEquals(400, request("GET", "/api/customers?afterId=abc", null, staff).statusCode());
+			List<String> all = new ArrayList<>(); String cursor = created.getFirst().id();
+			for (int page = 0; page < 100; page++) {
+				var response = request("GET", "/api/customers?limit=2" + (cursor == null ? "" : "&afterId=" + cursor), null, staff);
+				assertEquals(200, response.statusCode(), response.body());
+				assertFalse(response.body().contains("passwordHash")); assertFalse(response.body().contains("phone"));
+				List<String> ids = JsonPath.read(response.body(), "$[*].id");
+				if (ids.isEmpty()) break;
+				all.addAll(ids); cursor = ids.getLast();
+			}
+			assertEquals(all.size(), all.stream().distinct().count());
+			assertEquals(all.stream().sorted().toList(), all);
+			assertTrue(all.containsAll(created.subList(1, created.size()).stream().map(CustomerResponse::id).toList()));
+			System.out.println("Staff directory: 401 anonymous, 403 ordinary; bounded cursor pages globally sorted without duplicates; passwords/phones excluded");
+		}
+		finally {
+			for (CustomerResponse customer : created) {
+				router.templateFor(customer.id()).remove(Query.query(Criteria.where("_id").is(customer.id())), Customer.class);
+				redis.delete(List.of("crm:customer-email:" + customer.email(), cache.key(customer.id())));
+			}
+		}
 	}
 
 	private HttpResponse<String> request(String method, String path, String body, String token) throws Exception {

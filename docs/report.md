@@ -31,7 +31,7 @@ Detailed specifications: [authentication](authentication.md), [rate limiter](rat
 
 ## Correctness, security, and failure tests
 
-The latest full backend suite ran 83 tests: 81 passed, 0 failures/errors, and two opt-in tests were skipped (the deliberately stopped-shard scenario and benchmark fixture tooling). The stopped-shard regression test was then run separately and passed, with the shard restored afterward. Benchmark fixture tooling also ran explicitly for seeding/cleanup. Two JavaScript display/session-helper tests and three Python harness/analysis tests passed separately. The benchmark stops live services and records their API behavior.
+The latest full backend suite ran 85 tests: 82 passed, 0 failures/errors, and three opt-in tests were skipped (the deliberately stopped-shard scenario and the benchmark/demo fixture tools). The stopped-shard regression test passed separately, with the shard restored afterward. Fixture tooling ran explicitly for its datasets. Two JavaScript display/session-helper tests and three Python harness/analysis tests passed separately. The benchmark stops live services and records their API behavior. The new staff directory is tested over real HTTP for access control, projection, validation, and cursor pagination.
 
 Tests cover JWT validation and owner/staff permissions, registration uniqueness, profile version/cache behavior, literal/normalized prefix search, autocomplete accuracy, exact decimal opportunity storage, shared quotas across server contexts, concurrent ID generation, and physical colocation across three shards. Thirty-two competing qualification, task-completion, or ticket-reply updates produce one success and 31 conflicts. Outbox tests simulate interruption before delivery and replay after insertion; the stored event remains unique and read acknowledgement survives replay.
 
@@ -66,3 +66,5 @@ Verdict: feasible as a demonstrated laboratory prototype with the documented lim
 ## Demonstration and reproduction
 
 Follow [demo.md](demo.md) for the customer/staff walkthrough and [benchmark instructions](../benchmarks/README.md) to reproduce experiments. The code, source-controlled configuration, tests, report, measured tables, and figures together provide the project deliverables. The report must be presented with its limitations, especially the absence of automatic data-store failover and shard migration.
+
+[requirements-checklist.md](requirements-checklist.md) audits deliverables 5–10 and separates implemented requirements from pending formal submission/live assessment. [demo-data.md](demo-data.md) describes the persistent Indian-style dataset and the browsable account directory. Historical capacity measurements predate those additions; their original artifact hash and raw data are retained.

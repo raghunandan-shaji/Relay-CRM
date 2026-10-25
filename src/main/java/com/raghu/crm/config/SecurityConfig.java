@@ -41,7 +41,7 @@ public class SecurityConfig {
 			.requestMatchers("/api/customers/*/interactions", "/api/customers/*/interactions/**",
 				"/api/customers/*/activities", "/api/customers/*/activities/**").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers("/api/sales-representatives", "/api/customers/*/leads", "/api/customers/*/leads/**").hasAuthority("SCOPE_crm:staff")
-			.requestMatchers(HttpMethod.GET, "/api/customers/search", "/api/customers/suggestions").hasAuthority("SCOPE_crm:staff")
+			.requestMatchers(HttpMethod.GET, "/api/customers", "/api/customers/search", "/api/customers/suggestions").hasAuthority("SCOPE_crm:staff")
 			.requestMatchers(HttpMethod.GET, "/api/customers/{id}").authenticated()
 			.requestMatchers(HttpMethod.PUT, "/api/customers/{id}").authenticated()
 			.anyRequest().denyAll())

@@ -1,0 +1,27 @@
+{
+  "dataset": "relay-demo-v1",
+  "new_staff": 6,
+  "new_customers": 50,
+  "counts": {
+    "Lead": 100,
+    "Interaction": 200,
+    "SalesActivity": 100,
+    "SupportTicket": 63,
+    "CustomerEvent": 404,
+    "Opportunity": 62
+  },
+  "account_distribution": {
+    "shard-0": 18,
+    "shard-1": 21,
+    "shard-2": 17
+  },
+  "successful_rerun_unchanged": true,
+  "backend_tests": {
+    "discovered": 85,
+    "passed": 82,
+    "skipped_opt_in": 3,
+    "failures": 0
+  },
+  "javascript_helper_tests_passed": 2,
+  "python_harness_tests_passed": 3
+}

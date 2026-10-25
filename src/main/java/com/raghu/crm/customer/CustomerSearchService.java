@@ -79,6 +79,21 @@ public class CustomerSearchService {
 		}
 	}
 
+	public List<CustomerSummary> directory(String afterId, int limit) {
+		if (limit < 1 || limit > 50) throw new IllegalArgumentException("Directory limit must be 1–50");
+		Criteria criteria = afterId == null ? new Criteria() : Criteria.where("_id").gt(afterId);
+		Query query = Query.query(criteria).with(Sort.by("_id")).limit(limit)
+			.withHint("_id_").maxTime(Duration.ofSeconds(2));
+		query.fields().include("fullName", "email", "company");
+		List<CustomerSummary> accounts = new ArrayList<>();
+		for (String shard : shards.shardIds()) {
+			for (CustomerSummary customer : shards.template(shard).find(query, CustomerSummary.class, "customers")) {
+				accounts.add(new CustomerSummary(customer.id(), customer.fullName(), customer.email(), customer.company(), shard));
+			}
+		}
+		return accounts.stream().sorted(Comparator.comparing(CustomerSummary::id)).limit(limit).toList();
+	}
+
 	static Query prefixQuery(String prefix, int limit) {
 		String normalized = CustomerNames.normalize(prefix);
 		if (normalized.codePointCount(0, normalized.length()) < 2 || normalized.length() > 120 || limit < 1 || limit > 50) {

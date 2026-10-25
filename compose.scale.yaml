@@ -19,7 +19,7 @@ x-crm: &crm
     MONGODB_SHARD_2_URI: mongodb://mongodb-shard-2:27017/crm?serverSelectionTimeoutMS=1000&connectTimeoutMS=1000
     MONGODB_URI: mongodb://mongodb:27017/crm
     REDIS_URL: redis://redis:6379
-    CRM_STAFF_EMAILS: ${CRM_STAFF_EMAILS:-raghu.demo@crm.local}
+    CRM_STAFF_EMAILS: ${CRM_STAFF_EMAILS:-raghu.demo@crm.local,ananya.iyer@demo.relay.test,arjun.nair@demo.relay.test,kavya.menon@demo.relay.test,rohan.kulkarni@demo.relay.test,neha.sharma@demo.relay.test,vikram.rao@demo.relay.test}
     RATE_LIMIT_API: ${RATE_LIMIT_API:-120}
     RATE_LIMIT_LOGIN: ${RATE_LIMIT_LOGIN:-10}
     CUSTOMER_CACHE_TTL: ${CUSTOMER_CACHE_TTL:-60s}

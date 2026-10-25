@@ -25,7 +25,7 @@ const button = (label, action, className = '') => h('button', {type:'button', cl
 const badge = value => h('span', {class:`pill ${String(value).toLowerCase()}`}, pretty(value));
 const empty = message => h('div', {class:'empty'}, message);
 const meta = text => h('p', {class:'meta'}, text);
-function nav(current) { for (const name of ['workspace','desk','inbox']) $(`#nav-${name}`).classList.toggle('active', name === current); }
+function nav(current) { for (const name of ['customers','workspace','desk','inbox']) $(`#nav-${name}`).classList.toggle('active', name === current); }
 function heading(title, subtitle, eyebrow = 'CUSTOMER WORKSPACE') { return h('div', {class:'page-heading'}, h('div', {}, h('p', {class:'eyebrow'}, eyebrow), h('h1', {}, title), h('p', {class:'muted'}, subtitle))); }
 function form(fields, label, submit) {
   const set = h('fieldset');
@@ -73,17 +73,26 @@ $('#auth-form').onsubmit = event => {
       const info = claims(login.accessToken);
       session = {token:login.accessToken, id:login.customerId, staff:String(info.scope || '').split(' ').includes('crm:staff')};
       $('#identity').textContent = values.email; $('#role').textContent = session.staff ? 'Staff workspace' : 'Customer portal';
-      $('#nav-desk').hidden = !session.staff; $('#search-wrap').hidden = !session.staff;
+      $('#nav-desk').hidden = !session.staff; $('#nav-customers').hidden = !session.staff; $('#search-wrap').hidden = !session.staff;
       $('#auth').hidden = true; $('#app').hidden = false; $('#password').value = '';
       $('.skip-link').href='#workspace';
-      await openCustomer(session.id);
+      if (session.staff) directory(); else await openCustomer(session.id);
     } finally { $('#auth-submit').disabled = false; }
   });
 };
 $('#nav-workspace').onclick = () => run(() => openCustomer(selected?.id || session.id));
+$('#nav-customers').onclick = () => run(directory);
 $('#nav-desk').onclick = () => run(desk);
 $('#nav-inbox').onclick = () => run(inbox);
 let searchTimer, searchVersion = 0;
+function directory() {
+  selection++; nav('customers');
+  const list = h('section', {class:'directory-list'});
+  $('#workspace').replaceChildren(heading('Customer directory', 'Browse registered accounts and open a customer workspace.', 'TEAM WORKSPACE'), list);
+  paged(list, cursor => api('/api/customers?limit=20'+(cursor?'&afterId='+cursor:'')), customer =>
+    h('article', {class:'record'}, h('h3', {}, customer.fullName), h('p', {}, customer.company || 'Independent customer'),
+      meta(customer.email), h('div', {class:'actions'}, button('Open customer', () => openCustomer(customer.id)))), customer => customer.id);
+}
 $('#customer-search').oninput = () => {
   clearTimeout(searchTimer); const version = ++searchVersion, prefix = $('#customer-search').value.trim();
   $('#search-results').hidden = prefix.length < 2;

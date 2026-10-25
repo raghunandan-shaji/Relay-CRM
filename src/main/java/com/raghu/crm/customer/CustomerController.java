@@ -53,6 +53,14 @@ public class CustomerController {
 		return search.search(prefix, limit);
 	}
 
+	@GetMapping
+	@PreAuthorize("hasAuthority('SCOPE_crm:staff')")
+	public List<CustomerSummary> directory(
+			@RequestParam(required = false) @Pattern(regexp = "[0-9]{1,19}") String afterId,
+			@RequestParam(defaultValue = "20") @Min(1) @Max(50) int limit) {
+		return search.directory(afterId, limit);
+	}
+
 	@GetMapping("/suggestions")
 	@PreAuthorize("hasAuthority('SCOPE_crm:staff')")
 	public List<CustomerSuggestion> suggestions(@RequestParam @Size(min = 2, max = 120) String prefix,

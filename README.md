@@ -22,6 +22,7 @@ A Java/Spring Boot CRM prototype for UCS3513, with a basic browser frontend, cus
 | Customer support | Customer-owned tickets/conversations, staff queue/assignment, versioned status/replies |
 | Durable in-app notifications | Single-record atomic outbox, retrying workers, duplicate suppression, owner-only inbox acknowledgement |
 | Basic frontend | Locally served HTML/CSS/JavaScript; role-aware customer/staff workflows |
+| Staff account directory | Bounded, indexed shard queries and merged cursor pages; staff-only browsing |
 | Application scale-out | Independent Java containers behind NGINX, shared JWT/data/quotas, unique worker IDs |
 
 The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
@@ -66,6 +67,14 @@ docker compose -f compose.yaml -f compose.scale.yaml up -d app-1 app-2 app-3 gat
 
 Open `http://127.0.0.1:8090`. Direct replica ports are 8081/8082/8083, with worker IDs 20/21/22. The native app may run separately with worker 0. Configure staff emails identically across replicas. [demo.md](docs/demo.md) documents local demo accounts and the walkthrough.
 
+For the persistent Indian-style dataset:
+
+```sh
+RUN_DEMO_SEED=true ./mvnw -B -ntp -Dtest=DemoDataSeedTests test
+```
+
+This adds six staff and 50 customers with linked CRM records, preserving existing accounts. All new demo accounts use `demo-password-123`. Example staff: `ananya.iyer@demo.relay.test`; customer: `aarav.mehta@demo.relay.test`. See [demo-data.md](docs/demo-data.md) for the staff list, rerun behavior, and local-only limits. Staff land on the customer directory; existing Raghu access remains available.
+
 To stop infrastructure while keeping its data:
 
 ```sh
@@ -81,6 +90,7 @@ docker compose stop
 | `GET /api/customers/{id}` | Read own profile, or another customer's profile with staff scope |
 | `PUT /api/customers/{id}` | Update that profile using the latest version |
 | `GET /api/customers/search?prefix=ra` | Staff-only customer-name prefix search |
+| `GET /api/customers?limit=20` | Staff-only account directory; cursor continuation with afterId |
 | `GET /api/customers/suggestions?prefix=ra` | Staff-only autocomplete suggestions |
 | `GET /actuator/health/liveness` | Liveness probe |
 
@@ -130,7 +140,7 @@ RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests tes
 docker compose start mongodb-shard-2
 ```
 
-Last full integration-enabled run at this checkpoint: **83 tests discovered, 81 passed, 2 opt-in tests skipped, 0 failures/errors**. The stopped-shard test subsequently passed in its separate opt-in run; benchmark fixture tooling ran explicitly for seeding/cleanup. Two JavaScript helper tests and three Python harness tests also passed. Controlled API service failures are measured by the benchmark runner.
+Latest full integration-enabled run: **85 tests discovered, 82 passed, 3 opt-in tests skipped, 0 failures/errors**. Opt-in skips are the deliberately stopped-shard test and the benchmark/demo fixture tools. The stopped-shard test passed separately; fixture tools ran explicitly for their datasets. Two JavaScript helper tests and three Python harness tests also passed. Controlled API service failures are measured by the benchmark runner.
 
 Selected observed checks:
 
@@ -150,6 +160,7 @@ Selected observed checks:
 - [Measured performance, resources, distribution, growth, and failures](docs/performance.md)
 - [Reproducible JMeter experiment](benchmarks/README.md) and [retained results](benchmarks/results/)
 - [Project report](docs/report.md) and [end-to-end demonstration](docs/demo.md)
+- [Requirement-by-requirement completion audit](docs/requirements-checklist.md)
 
 The server-count experiment uses one versus three independent JVM/container processes at 5/20/60 concurrent users, with two trials per configuration. It also expands synthetic customers from 200 to 3,000 and tests application/shard/Redis failures. Read the measured report for the actual results and experimental limitations.
 

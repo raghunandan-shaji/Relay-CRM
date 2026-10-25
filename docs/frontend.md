@@ -7,7 +7,7 @@ Create an ordinary customer account or sign in with an existing account. Staff s
 Implemented screens:
 
 - Sign in and registration.
-- Own profile editing and staff customer-name search.
+- Own profile editing, a paginated staff account directory, and staff customer-name search.
 - Staff lead creation, contact/loss status, opportunity qualification, and deal-stage progression.
 - Communication history and staff interaction logging.
 - Planned activities and staff completion/cancellation.

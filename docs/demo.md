@@ -19,6 +19,8 @@ Existing local demo accounts:
 
 These are synthetic local demonstration credentials, not deployment secrets. They are not automatically seeded on a fresh clone. Create the accounts through registration and configure `CRM_STAFF_EMAILS` for the staff email. Do not reuse demo passwords in a public deployment.
 
+The persistent [Indian-style dataset](demo-data.md) adds six staff and 50 customers, with linked sales/history/tasks/support/inbox records. Staff now land on a browsable customer directory. For a populated customer journey, sign in as `aarav.mehta@demo.relay.test` using the same demo password. The existing Raghu/Rahul accounts remain available.
+
 ## Functional walkthrough
 
 1. Register a new ordinary customer or sign in as the demo customer. Change company/phone under Profile and save. The customer portal has no staff pipeline or global search controls.
