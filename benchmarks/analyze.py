@@ -59,7 +59,7 @@ def main():
     for (system,concurrency),runs in sorted(groups.items()):
         table.append({'system':system,'concurrency':concurrency,**aggregate(runs)})
     with (DATA/'comparison.csv').open('w',newline='') as output:
-        writer=csv.DictWriter(output,fieldnames=[key for key in table[0] if key!='by_app']);writer.writeheader()
+        writer=csv.DictWriter(output,fieldnames=[key for key in table[0] if key!='by_app'],lineterminator='\n');writer.writeheader()
         writer.writerows({key:value for key,value in row.items() if key!='by_app'} for row in table)
     (DATA/'comparison.json').write_text(json.dumps(table,indent=2))
     try:
@@ -80,6 +80,8 @@ def main():
         for axis in axes:axis.set_xlabel('Concurrent JMeter users');axis.set_xticks([5,20,60]);axis.grid(alpha=.2);axis.legend(frameon=False)
         figure.supxlabel('Whiskers show the range across two trials; points use pooled samples.',fontsize=9)
         figure.savefig(DATA/'scalability.png',dpi=180);figure.savefig(DATA/'scalability.svg');plt.close(figure)
+        svg=DATA/'scalability.svg'
+        svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
     except ImportError:
         print('Matplotlib unavailable; numeric tables generated, plots skipped.',file=sys.stderr)
     failures=json.loads((DATA/'shard-failure.json').read_text());redis=json.loads((DATA/'redis-failure.json').read_text())
