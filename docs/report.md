@@ -68,3 +68,5 @@ Verdict: feasible as a demonstrated laboratory prototype with the documented lim
 Follow [demo.md](demo.md) for the customer/staff walkthrough and [benchmark instructions](../benchmarks/README.md) to reproduce experiments. The code, source-controlled configuration, tests, report, measured tables, and figures together provide the project deliverables. The report must be presented with its limitations, especially the absence of automatic data-store failover and shard migration.
 
 [requirements-checklist.md](requirements-checklist.md) audits deliverables 5–10 and separates implemented requirements from pending formal submission/live assessment. [demo-data.md](demo-data.md) describes the persistent Indian-style dataset and the browsable account directory. Historical capacity measurements predate those additions; their original artifact hash and raw data are retained.
+
+For a concise overview, see [short-report.md](short-report.md). The current demo also includes recipient-owned staff inbox briefings; these are seeded messages, not automatic future staff alerts.

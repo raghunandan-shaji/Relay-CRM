@@ -1,175 +1,199 @@
-# Relay CRM — System Design Laboratory
+# Relay CRM
 
-A Java/Spring Boot CRM prototype for UCS3513, with a basic browser frontend, customer/staff workflows, three application processes, customer-sharded MongoDB storage, and reproducible performance/failure experiments. The documented limits are part of the result; this is not a claim of production or million-user readiness.
+**A shared notebook for a business and its customers.**
 
-## Current implementation
+Imagine a shop with lots of customers. Relay remembers who they are, what they want, what the team promised, and who needs help.
 
-| Component | Implemented use |
+This is a working college project for **UCS3513 — System Design Laboratory**. It has a browser app, several servers, and recorded tests.
+
+## Try it
+
+Open **[http://127.0.0.1:8090](http://127.0.0.1:8090)** when the app is running.
+
+| Who are you? | Email | Password |
+| --- | --- | --- |
+| Staff member | `ananya.iyer@demo.relay.test` | `demo-password-123` |
+| Customer | `aarav.mehta@demo.relay.test` | `demo-password-123` |
+| Existing staff account | `raghu.demo@crm.local` | `demo-password-123` |
+
+The first two accounts come from the demo-data tool. Raghu is an existing account in this local setup. These are **practice passwords**, for this local project.
+
+### What can I do?
+
+**As staff:** open Customers, pick a person, and explore their workspace.
+
+- **Profile:** who the customer is.
+- **Pipeline:** enquiries and possible sales. An enquiry is a *lead*. A possible deal is an *opportunity*.
+- **History:** recorded calls, emails, meetings, and notes.
+- **Activities:** jobs the team plans to do next.
+- **Support:** questions the customer needs help with.
+- **My inbox:** messages addressed to your account. Staff demo messages can open the related customer.
+
+**As a customer:** see your own information, ask for help, reply to support, and read your inbox.
+
+The demo adds **6 staff and 50 customers**, with Indian-style names and linked records. Existing accounts stay in place. [See all demo details](docs/demo-data.md).
+
+## How does it work?
+
+Think of three helpers and three cupboards:
+
+1. The **browser** is the page you use.
+2. The **traffic helper**, NGINX, shares requests between three app servers.
+3. Each **app server** checks who you are and does the work.
+4. **Redis** is a shared quick-access box. It remembers login lookups, request allowances, and recently read profiles.
+5. **MongoDB** keeps the saved records in three groups, called *shards*.
+6. A **routing rule** chooses an account's home shard. Its business records stay together.
+
+### The detailed architecture map
+
+```mermaid
+flowchart TB
+    USER["Customer or staff member"] --> UI["Browser frontend<br/>HTML, CSS, JavaScript"]
+    UI --> GATEWAY["NGINX gateway :8090<br/>Shares requests between servers<br/>Detects failed connections"]
+
+    subgraph APPS["Three independent CRM application processes"]
+        APP1["Spring Boot server 1<br/>Direct port :8081<br/>Snowflake worker 20<br/>API + login checks + delivery worker"]
+        APP2["Spring Boot server 2<br/>Direct port :8082<br/>Snowflake worker 21<br/>API + login checks + delivery worker"]
+        APP3["Spring Boot server 3<br/>Direct port :8083<br/>Snowflake worker 22<br/>API + login checks + delivery worker"]
+    end
+
+    GATEWAY --> APP1
+    GATEWAY --> APP2
+    GATEWAY --> APP3
+    APP1 <--> REDIS
+    APP2 <--> REDIS
+    APP3 <--> REDIS
+    REDIS[("Shared Redis :6379<br/>Email-to-account lookup<br/>Atomic request counters<br/>Profile cache with expiry")]
+
+    APP1 --> ROUTE
+    APP2 --> ROUTE
+    APP3 --> ROUTE
+    ROUTE["Routing code inside every app<br/>Consistent hash of customer/account ID<br/>256 virtual nodes per shard"]
+
+    subgraph DATA["Three standalone MongoDB databases"]
+        DB0[("Shard 0 :27017<br/>customers, leads, interactions<br/>activities, tickets, customer_events")]
+        DB1[("Shard 1 :27018<br/>customers, leads, interactions<br/>activities, tickets, customer_events")]
+        DB2[("Shard 2 :27019<br/>customers, leads, interactions<br/>activities, tickets, customer_events")]
+    end
+
+    ROUTE <--> DB0
+    ROUTE <--> DB1
+    ROUTE <--> DB2
+    TEST["JMeter + Python test runner<br/>5, 20, 60 concurrent users<br/>One-server and three-server trials"] --> GATEWAY
+    TEST -.-> METRICS["Staff-protected app metrics<br/>Docker CPU and memory samples"]
+    TEST -.-> RESULTS["Saved evidence<br/>Raw samples, tables, graphs<br/>Growth and failure results"]
+    METRICS -.-> RESULTS
+```
+
+The routing box is drawn once to keep the picture readable. That code runs inside **each** app server. Redis and the databases are shared by all three app servers.
+
+### What happens inside one server?
+
+```mermaid
+flowchart TD
+    REQUEST["A request arrives"] --> TOKEN["Check the login token, when required<br/>JWT signature and expiry"]
+    TOKEN --> QUOTA["Check the shared request allowance<br/>Redis rate limiter"]
+    QUOTA --> ACCESS["Check permission<br/>Customer owns the record, or staff is allowed"]
+    ACCESS --> CRM["CRM code<br/>Profiles, directory, search, sales<br/>History, activities, support, inbox"]
+    CRM --> IDS["New record?<br/>Make a unique Snowflake ID"]
+    CRM --> CACHE["Profile read?<br/>Try the Redis cache"]
+    CACHE --> HIT["Found it?<br/>Return the cached public profile"]
+    CACHE --> MISS["Missing?<br/>Read its MongoDB shard"]
+    CRM --> SEARCH["Directory or name search?<br/>Read bounded pages from each shard<br/>Merge and sort the results"]
+    CRM --> WRITE["Change a record?<br/>Match its expected version<br/>Reject stale changes"]
+    WRITE --> ATOMIC["Ticket or activity change<br/>Save the change and one pending event<br/>in the same MongoDB document write"]
+    ATOMIC --> WORKER["Delivery worker<br/>Also retries pending events after interruption"]
+    WORKER --> EVENT["Insert event using its unique ID<br/>Duplicate replay keeps the existing event"]
+    EVENT --> CLEAR["Clear only that pending event<br/>Inbox entry stays in MongoDB"]
+```
+
+Some paths use different steps. Registration and login have their own limits. Opportunities live inside their lead document. Customer inbox events use the outbox; staff briefings are added by the demo-data tool.
+
+### Small words for the big ideas
+
+| Name | Simple meaning |
 | --- | --- |
-| Snowflake ID generator | Customer, lead, opportunity, interaction, and activity IDs; each application replica needs a distinct worker ID |
-| Consistent hashing | Customer-ID routing with 256 virtual nodes per configured shard |
-| Application-level database sharding | Customers spread across 3 independent MongoDB instances; their leads, interactions, and activities are colocated |
-| Redis key-value store | Global normalized-email-to-customer-ID index |
-| JWT authentication | Login and customer-owned profile access without HTTP sessions |
-| Atomic Redis rate limiter | Shared login, registration, and authenticated API quotas |
-| Optimistic concurrency | Version checks prevent stale profile updates |
-| Indexed search and autocomplete | Staff-only normalized name-prefix lookup across all shards |
-| Shared profile cache | Redis caches public profiles with TTL and version-aware writes |
-| Sales pipeline | Customer-shard lead storage, atomic opportunity qualification, and versioned deal stages |
-| Representative assignment | Consistent hashing over registered staff accounts; assignment is persisted |
-| Interaction history | Separate append-only records, indexed event-time cursor pagination, staff writes and owner/staff reads |
-| Sales activities | Planned work, representative assignment, filtered pagination, versioned completion/cancellation |
-| Customer support | Customer-owned tickets/conversations, staff queue/assignment, versioned status/replies |
-| Durable in-app notifications | Single-record atomic outbox, retrying workers, duplicate suppression, owner-only inbox acknowledgement |
-| Basic frontend | Locally served HTML/CSS/JavaScript; role-aware customer/staff workflows |
-| Staff account directory | Bounded, indexed shard queries and merged cursor pages; staff-only browsing |
-| Application scale-out | Independent Java containers behind NGINX, shared JWT/data/quotas, unique worker IDs |
+| JWT | A signed, short-lived login pass. Every server can check it. |
+| Rate limiter | Stops one account or address from asking too often. |
+| Sharding | Splits saved data between several databases. |
+| Consistent hashing | Chooses where an account's records belong. It also helps assign sales representatives. |
+| Cache | Keeps a quick copy of a recently read profile. |
+| Snowflake ID | Gives each new record its own number. Each server uses a different worker number. |
+| Version check | Stops an old edit from silently replacing a newer edit. |
+| Outbox | Saves a message-to-deliver with the change, so a worker can retry it later. |
 
-The MongoDB instances are standalone databases routed by the application, not a native MongoDB sharded cluster or replica sets. Consistent-hash tests measure key remapping; stored-record migration is not implemented yet.
+## Start it on a new computer
 
-## Requirements
+You need **Java 21, Docker Compose, and Git**. The Maven Wrapper downloads the build tool. The first run needs internet access.
 
-- Java 21
-- Docker with Docker Compose
-- Git
-- Optional: IntelliJ IDEA/VS Code, Postman, MongoDB Compass
+Run these commands from this project folder.
 
-Maven 3.9.11 is provided through the Maven Wrapper; no separate Maven installation is required. The first build/container startup needs internet access for dependencies and images.
-
-## Run locally
-
-From the project root:
+**1. Start the databases.**
 
 ```sh
 docker compose up -d
 ```
 
-On a fresh clone, generate a local signing secret for the current terminal session:
+**2. Make the private signing key once.** This keeps an existing key if one is already there.
 
 ```sh
-export JWT_SECRET="$(openssl rand -base64 32)"
-./mvnw spring-boot:run
+mkdir -p .local
+umask 077
+if [ ! -f .local/jwt.properties ]; then
+  printf 'JWT_SECRET=%s\n' "$(openssl rand -base64 32)" > .local/jwt.properties
+fi
 ```
 
-Do not commit signing secrets. Existing development setups may instead use the ignored `.local/jwt.properties` file described in [authentication.md](docs/authentication.md). Every application replica must share the same signing secret. Regenerating the secret invalidates existing tokens.
+Keep that file private. All three servers read the same key.
 
-The API binds to `http://127.0.0.1:8080`. MongoDB shard ports are 27017, 27018, and 27019; Redis uses 6379. Docker volumes retain local data between restarts. These local databases have no authentication and bind only to loopback; this configuration is not a public deployment.
-
-The same URL serves the frontend. See [frontend.md](docs/frontend.md) for screens and session behavior.
-
-For the independent three-process setup, first configure the shared ignored signing-key file as described in [benchmarks/README.md](benchmarks/README.md), then:
+**3. Build the app and add practice data.**
 
 ```sh
 ./mvnw -B -ntp package
+RUN_DEMO_SEED=true ./mvnw -B -ntp -Dtest=DemoDataSeedTests test
+```
+
+**4. Start the three servers and the gateway.**
+
+```sh
 docker compose -f compose.yaml -f compose.scale.yaml build app-1
 docker compose -f compose.yaml -f compose.scale.yaml up -d app-1 app-2 app-3 gateway
 ```
 
-Open `http://127.0.0.1:8090`. Direct replica ports are 8081/8082/8083, with worker IDs 20/21/22. The native app may run separately with worker 0. Configure staff emails identically across replicas. [demo.md](docs/demo.md) documents local demo accounts and the walkthrough.
+Open **http://127.0.0.1:8090** and use a demo login above. A single-server IntelliJ/Maven run uses port 8080; see [authentication setup](docs/authentication.md).
 
-For the persistent Indian-style dataset:
-
-```sh
-RUN_DEMO_SEED=true ./mvnw -B -ntp -Dtest=DemoDataSeedTests test
-```
-
-This adds six staff and 50 customers with linked CRM records, preserving existing accounts. All new demo accounts use `demo-password-123`. Example staff: `ananya.iyer@demo.relay.test`; customer: `aarav.mehta@demo.relay.test`. See [demo-data.md](docs/demo-data.md) for the staff list, rerun behavior, and local-only limits. Staff land on the customer directory; existing Raghu access remains available.
-
-To stop infrastructure while keeping its data:
+To stop everything while keeping saved data:
 
 ```sh
-docker compose stop
+docker compose -f compose.yaml -f compose.scale.yaml stop
 ```
 
-## Customer workflow
+## Did we test it?
 
-| Method and path | Behavior |
-| --- | --- |
-| `POST /api/customers` | Register; returns ID, shard ID, profile, and version |
-| `POST /api/auth/login` | Check email/password; return a 15-minute bearer JWT |
-| `GET /api/customers/{id}` | Read own profile, or another customer's profile with staff scope |
-| `PUT /api/customers/{id}` | Update that profile using the latest version |
-| `GET /api/customers/search?prefix=ra` | Staff-only customer-name prefix search |
-| `GET /api/customers?limit=20` | Staff-only account directory; cursor continuation with afterId |
-| `GET /api/customers/suggestions?prefix=ra` | Staff-only autocomplete suggestions |
-| `GET /actuator/health/liveness` | Liveness probe |
+Yes. The latest full backend run had **82 passing tests**, three opt-in tests/tools skipped, and no failures. The data tools and stopped-shard test were also run separately. Small JavaScript/Python checks passed too.
 
-Registration body:
+We measured **5, 20, and 60 people asking at once**, using JMeter. We compared one app server with three, grew the test data, and stopped services to see what happened.
 
-```json
-{
-  "fullName": "Demo Customer",
-  "email": "unique@example.com",
-  "password": "password-123",
-  "company": "CRM Lab"
-}
-```
-
-Login with that email/password, then send the returned `accessToken` as a bearer token. The profile URL must contain the `customerId` from the same login response. MongoDB stores that ID as the document's string `_id`.
-
-Default request allowances per 60-second window: login 10/IP, registration 5/IP, authenticated APIs 120/customer. Exhaustion returns 429 and `Retry-After`. See [rate-limiting.md](docs/rate-limiting.md) for configuration, algorithm, metrics, and a Postman demonstration.
-
-For staff access, configure exact registered emails with `CRM_STAFF_EMAILS` and log in again. Default staff access is empty. Profile responses expose `X-Profile-Source: mongodb` or `redis`. See [customer-search-cache.md](docs/customer-search-cache.md) for permissions, search initialization, cache consistency limits, and verification.
-
-Staff-only leads/opportunities are available under `/api/customers/{customerId}/leads`. The opportunity is embedded in its lead so qualification is one atomic MongoDB write. See [sales-workflow.md](docs/sales-workflow.md) for the complete Postman sequence, stages, assignment, pagination, and test results.
-
-Interaction history and sales activities are under `/api/customers/{customerId}/interactions` and `/activities`. Staff create/manage them; customers can read their own records. All record contents are customer-visible. See [interactions-activities.md](docs/interactions-activities.md) for the Postman sequence, access rules, pagination, and limits.
-
-Support tickets are under `/api/customers/{customerId}/tickets`; staff can query `/api/support/tickets`. Customers create/reply/read their own conversations; staff advance status and assign responsibility. Inboxes are under `/api/customers/{customerId}/notifications` and accessible only to their recipient. [support-notifications.md](docs/support-notifications.md) specifies the durable outbox and API.
-
-Staff-only component metrics are exposed at `/actuator/metrics`. Health/liveness remains public; other management endpoints are denied.
-
-## Verification
+Three servers did **not** consistently make requests faster on the shared laptop. The report shows the real results, including errors during failures.
 
 ```sh
-# Regression tests; real-database scenarios are skipped by default
-./mvnw test
-
-# Start infrastructure and run real MongoDB/Redis and HTTP scenarios too
-docker compose up -d
 RUN_INTEGRATION_TESTS=true ./mvnw test
 ```
 
-Stop any running CRM application before the integration suite to avoid reusing its Snowflake worker ID. The two-server test assigns its own distinct worker IDs. Test signing keys are configured only for the test JVM in Maven Surefire; they are not runtime defaults.
+Keep the databases running. Stop a native app using worker 0 before running tests. See [test instructions](benchmarks/README.md) for the measured experiments.
 
-The deliberate shard-outage test has a separate opt-in and expects shard 2 to be stopped. Restore it even if the test fails:
+## Read more
 
-```sh
-docker compose stop mongodb-shard-2
-RUN_SHARD_FAILURE_TESTS=true ./mvnw -Dtest=MongoShardFailureIntegrationTests test
-docker compose start mongodb-shard-2
-```
+- [Short project report](docs/short-report.md)
+- [Detailed project report](docs/report.md)
+- [Measured results and graphs](docs/performance.md)
+- [Demo accounts and seed data](docs/demo-data.md)
+- [Step-by-step demonstration](docs/demo.md)
+- [Requirement completion checklist](docs/requirements-checklist.md)
+- [Detailed architecture and component choices](docs/architecture.md)
 
-Latest full integration-enabled run: **85 tests discovered, 82 passed, 3 opt-in tests skipped, 0 failures/errors**. Opt-in skips are the deliberately stopped-shard test and the benchmark/demo fixture tools. The stopped-shard test passed separately; fixture tools ran explicitly for their datasets. Two JavaScript helper tests and three Python harness tests also passed. Controlled API service failures are measured by the benchmark runner.
+## What is still limited?
 
-Selected observed checks:
+This is a local laboratory prototype. MongoDB shards and Redis do not have backup replicas that automatically take over. Changing the live shard list needs a data-migration plan. Staff demo inbox messages are seeded; future staff assignment alerts are not automatic.
 
-- 100,000 routing keys: shard shares 33.09%, 33.81%, 33.10%.
-- Adding a fourth ring node: 27.50% of keys remapped, compared with 75.01% for the tested modulo baseline. This test does not migrate documents.
-- Shared limiter: 100 calls across 20 threads and 2 limiter objects, allowance 25, exactly 25 admitted and 75 rejected.
-- Two independent HTTP server contexts on different ports shared all three rate-limit policies. Both ran in one JVM, so this is a functional distribution check, not a multi-process capacity benchmark.
-- Real registration/login/profile requests, cross-customer access rejection, stale-update rejection, JWT validation, and shard health checks passed.
-- Selective name-prefix query over 600 fixtures: 12 documents examined through the index versus 602 through the collection-scan baseline. Cache and staff-access checks passed; detailed results are in [customer-search-cache.md](docs/customer-search-cache.md).
-- 32 concurrent lead qualifications: 1 success, 31 conflicts, exactly 1 opportunity. Three-shard lead colocation, representative distribution, and exact decimal storage checks passed; see [sales-workflow.md](docs/sales-workflow.md).
-- 32 concurrent interaction inserts: all 32 persisted with distinct IDs. Of 32 concurrent task closures, exactly 1 succeeded and 31 conflicted. Owner/staff authorization, tied-timestamp history pagination, and three-shard engagement colocation passed; see [interactions-activities.md](docs/interactions-activities.md).
-- 32 concurrent support replies: 1 success, 31 conflicts, exactly 1 new reply event. Outbox interruption/replay tests preserved event uniqueness and read acknowledgement; see [support-notifications.md](docs/support-notifications.md).
-
-## Performance, architecture, and report
-
-- [Architecture diagram and requirement/component mapping](docs/architecture.md)
-- [Measured performance, resources, distribution, growth, and failures](docs/performance.md)
-- [Reproducible JMeter experiment](benchmarks/README.md) and [retained results](benchmarks/results/)
-- [Project report](docs/report.md) and [end-to-end demonstration](docs/demo.md)
-- [Requirement-by-requirement completion audit](docs/requirements-checklist.md)
-
-The server-count experiment uses one versus three independent JVM/container processes at 5/20/60 concurrent users, with two trials per configuration. It also expands synthetic customers from 200 to 3,000 and tests application/shard/Redis failures. Read the measured report for the actual results and experimental limitations.
-
-## Remaining work and limits
-
-- Replication/failover and safe data migration when changing shard membership
-- Registration/email-index crash recovery, creation-request idempotency, and stricter cache consistency
-- JWT revocation/refresh, broader operational/security hardening, backups, and independent-machine capacity tests
-
-Redis and each MongoDB shard are currently single points of failure. Registration spans Redis and MongoDB without a distributed transaction, so crashes or ambiguous writes can leave the email index inconsistent. Profile caching is eventually consistent. The limiter returns 503 when Redis quota checking fails. JWT refresh/revocation, full staff role management, HTTPS termination, and production operational hardening are not implemented yet.
-
-The measured experiment is on one shared laptop. Its server-count baseline uses the same sharding/cache design, and its closed-loop tests are short. These results do not establish production readiness or million-user capacity.
+Logging an email or call records it; it does not send an email or make a call. Public deployment also needs stronger account provisioning, secured databases, HTTPS, backups, and operational work. The project has not proved million-user capacity.

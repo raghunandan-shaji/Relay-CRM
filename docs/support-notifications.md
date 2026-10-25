@@ -58,6 +58,8 @@ This is at-least-once processing with duplicate suppression in the stored inbox.
 
 The `customer_events` collection serves both ticket conversation history and the customer inbox. Customer replies remain in conversation history without notifying the customer about their own reply. Ticket creation, staff replies/handling changes, and activity creation/completion/cancellation generate customer notifications. The frontend's inbox refresh is manual; there is no WebSocket or browser push service. Staff handle incoming requests through the support queue rather than a separate staff notification subscription.
 
+The demonstration seeder additionally inserts recipient-owned `STAFF_BRIEFING` records for staff, with links to customer workspaces. They are demo data rather than an automatic staff subscription. The inbox's owner-only access checks remain unchanged.
+
 ## Verification
 
 Real HTTP integration tests cover customer/staff access, wrong-customer rejection, ticket progression, version conflicts, conversation history, and idempotent read acknowledgement. Failure tests hold delivery after commit, start a new worker instance, and replay an already-inserted event after simulating an interrupted clear. The event is stored once and `readAt` remains intact. A 32-way concurrent reply test produces one success and 31 conflicts. Three-shard tests verify ticket and event colocation. Existing task-completion concurrency tests also run against the outbox-enabled implementation.

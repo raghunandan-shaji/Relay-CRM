@@ -49,6 +49,7 @@ class DemoDataSeedTests {
 	@Autowired TicketService tickets;
 	@Autowired OutboxService outbox;
 	@Autowired CustomerSearchService search;
+	@Autowired SalesRepresentativeService representatives;
 	@Autowired JsonMapper json;
 	private String hash;
 	private final List<Customer> accounts=new ArrayList<>();
@@ -68,6 +69,7 @@ class DemoDataSeedTests {
 				seedLeads(customer,representative,index);seedHistory(customer,representative,index);seedActivities(customer,representative,index);seedTickets(customer,representative,index);
 			}
 			List<String> customerIds=accounts.subList(STAFF.size(),accounts.size()).stream().map(Customer::id).toList();
+			Map<String,Long> staffInboxes=seedStaffInboxes(customerIds);
 			Map<String,Object> evidence=new LinkedHashMap<>();
 			evidence.put("seed",MARKER);evidence.put("staff",staff.stream().map(account->Map.of("name",account.fullName(),"email",account.email(),"id",account.id())).toList());
 			evidence.put("customers",accounts.stream().filter(account->customerIds.contains(account.id())).map(account->Map.of("name",account.fullName(),"email",account.email(),"id",account.id(),"company",account.company())).toList());
@@ -79,9 +81,10 @@ class DemoDataSeedTests {
 			}
 			long opportunities=0;for(String shard:shards.shardIds())opportunities+=shards.template(shard).count(Query.query(Criteria.where("customerId").in(customerIds).and("opportunity").ne(null)),Lead.class);
 			counts.put("Opportunity",opportunities);evidence.put("counts",counts);evidence.put("distribution",distribution);
+			evidence.put("staffInboxes",staffInboxes);
 			assertEquals(56,accounts.size());assertTrue(counts.get("Lead")>=100);assertTrue(counts.get("Interaction")>=200);assertTrue(counts.get("SalesActivity")>=100);assertTrue(counts.get("SupportTicket")>=63);
 			Files.writeString(Path.of(".local/demo-accounts.json"),json.writeValueAsString(evidence));
-			System.out.println("Persistent demo seed: 6 staff + 50 customers; records="+counts+"; account shards="+distribution);
+			System.out.println("Persistent demo seed: 6 staff + 50 customers; records="+counts+"; account shards="+distribution+"; staff inboxes="+staffInboxes);
 		}
 	}
 
@@ -153,5 +156,34 @@ class DemoDataSeedTests {
 	private boolean exists(String customerId,Class<?> type,String field,String value) {
 		// shortcut: preserve existing records; repair partially initialized records explicitly after an interrupted seed.
 		return router.templateFor(customerId).exists(Query.query(Criteria.where("customerId").is(customerId).and(field).is(value)),type);
+	}
+
+	private Map<String,Long> seedStaffInboxes(List<String> customerIds) {
+		Map<String,Long> result=new LinkedHashMap<>();
+		for(var representative:representatives.available()) {
+			String customerId=customerIds.getFirst(); boolean assigned=false;
+			for(String shard:shards.shardIds()) {
+				Lead lead=shards.template(shard).findOne(Query.query(Criteria.where("customerId").in(customerIds)
+					.and("representativeId").is(representative.id())).with(org.springframework.data.domain.Sort.by("_id")),Lead.class);
+				if(lead!=null){customerId=lead.customerId();assigned=true;break;}
+			}
+			Customer customer=router.templateFor(customerId).findById(customerId,Customer.class);
+			assertNotNull(customer);
+			List<String> titles=List.of("Your daily CRM briefing","Customer follow-up: "+customer.fullName(),"Support handover: "+customer.fullName());
+			List<String> bodies=List.of("Your workspace has customers, sales opportunities, planned activities, and support conversations ready to review.",
+				(assigned?"You are a representative for ":"Review the team handover for ")+customer.fullName()+" at "+customer.company()+". Open the customer workspace to check the pipeline and follow-ups.",
+				"Read the latest support conversation for "+customer.fullName()+" and confirm the next steps with the team.");
+			for(int item=0;item<titles.size();item++) {
+				Query key=Query.query(Criteria.where("customerId").is(representative.id()).and("sourceType").is("STAFF_BRIEFING").and("title").is(titles.get(item)));
+				if(!router.templateFor(representative.id()).exists(key,CustomerEvent.class)) {
+					CustomerEvent notice=outbox.event(representative.id(),"STAFF_BRIEFING",customerId,"BRIEFING",titles.get(item),bodies.get(item),representative.id(),true);
+					router.templateFor(representative.id()).insert(notice);
+				}
+			}
+			long total=router.templateFor(representative.id()).count(Query.query(Criteria.where("customerId").is(representative.id())
+				.and("sourceType").is("STAFF_BRIEFING").and("notifyCustomer").is(true)),CustomerEvent.class);
+			assertTrue(total>=3,"Staff inbox must have demo briefings");result.put(representative.email(),total);
+		}
+		return result;
 	}
 }

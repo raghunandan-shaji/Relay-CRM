@@ -37,6 +37,14 @@ Observed initial run: 6 staff, 50 customers, the record counts above, and 404 cu
 
 A second execution preserved all 56 account IDs and all entity counts. Live checks found 59 registered accounts in pages of 20/20/19, seven eligible staff representatives including Raghu, and populated Aarav workflows: two leads, four interactions, two activities, two tickets, and ten inbox notifications. New staff/customer logins succeeded and the ordinary customer's directory request returned 403. [Verification summary](demo-data-verification.json).
 
+## Staff inboxes
+
+The seeder now also adds three `STAFF_BRIEFING` messages to each registered staff account, including the existing Raghu account: 21 staff messages in the verified setup. They contain a workspace briefing, a customer follow-up, and a support handover. **Open customer** opens the linked account. The briefings live in the staff recipient's own shard and inbox; staff are not given access to someone else's inbox.
+
+Real login/inbox checks verified all seven staff accounts. A repeated seed created no duplicate briefings and preserved a message's read acknowledgement. Cross-staff inbox access returned 403. [Staff inbox verification](staff-inbox-verification.json).
+
+These are persistent demo briefings. The current runtime outbox generates customer ticket/activity notifications; automatic future staff assignment alerts are not implemented.
+
 ## Staff configuration
 
 The local scale configuration defaults to Raghu plus the six approved demo staff emails. Override `CRM_STAFF_EMAILS` to provide a different list. For native IntelliJ/Maven runs, use the same list in the ignored `.local/staff.properties`. Staff access is determined by the server, not a registration form.

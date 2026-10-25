@@ -1,0 +1,37 @@
+{
+  "registered_staff_checked": 7,
+  "staff_inboxes": [
+    {
+      "email": "raghu.demo@crm.local",
+      "briefings": 3
+    },
+    {
+      "email": "ananya.iyer@demo.relay.test",
+      "briefings": 3
+    },
+    {
+      "email": "arjun.nair@demo.relay.test",
+      "briefings": 3
+    },
+    {
+      "email": "kavya.menon@demo.relay.test",
+      "briefings": 3
+    },
+    {
+      "email": "rohan.kulkarni@demo.relay.test",
+      "briefings": 3
+    },
+    {
+      "email": "neha.sharma@demo.relay.test",
+      "briefings": 3
+    },
+    {
+      "email": "vikram.rao@demo.relay.test",
+      "briefings": 3
+    }
+  ],
+  "total_seeded_staff_briefings": 21,
+  "repeat_did_not_duplicate_briefings": true,
+  "read_acknowledgement_preserved_on_repeat": true,
+  "cross_staff_inbox_request_status": 403
+}

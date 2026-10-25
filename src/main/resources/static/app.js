@@ -207,6 +207,7 @@ function inbox(){nav('inbox');const list=h('section');$('#workspace').replaceChi
     const actions=h('div',{class:'actions'});
     if(!value.readAt)actions.append(button('Mark read',async()=>{await api(customerPath(session.id)+'/notifications/'+value.id+'/read','PUT');inbox();}));
     if(value.sourceType==='TICKET')actions.append(button('Open ticket',()=>ticketDetail(value.customerId,value.sourceId)));
+    if(value.sourceType==='STAFF_BRIEFING'&&session.staff)actions.append(button('Open customer',()=>openCustomer(value.sourceId)));
     row.append(actions);return row;
   },value=>value.id);
 }

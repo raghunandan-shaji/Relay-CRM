@@ -23,5 +23,7 @@
     "failures": 0
   },
   "javascript_helper_tests_passed": 2,
-  "python_harness_tests_passed": 3
+  "python_harness_tests_passed": 3,
+  "staff_inboxes_populated": 7,
+  "seeded_staff_briefings": 21
 }
